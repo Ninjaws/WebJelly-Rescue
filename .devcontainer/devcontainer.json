@@ -1,0 +1,29 @@
+{
+    "name": "Jelly Rescue",
+    "build": {
+        "context": "..",
+        "dockerfile": "../Dockerfile",
+        "args": {},
+        "target": "development"
+    },
+    "runArgs": [
+        "--name=jelly-rescue-dev-cont",
+        "--net=host"
+    ],
+    "workspaceFolder": "/app",
+    "mounts": [
+        "source=./src,target=/app/src,type=bind"
+    ],
+    "customizations": {
+        "vscode": {
+            "settings": {},
+            "extensions": [
+                "esbenp.prettier-vscode",
+                "ms-vscode.cpptools-extension-pack",
+                "jeff-hykin.better-cpp-syntax"
+            ]
+        }
+    },
+    // "postCreateCommand": "/app/scripts/emsdk_setup.sh",
+    //"postStartCommand": "/app/scripts/emsdk_activate.sh"
+}
