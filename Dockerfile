@@ -1,13 +1,6 @@
 FROM gcc:latest as base
 
-# RUN apt-get install cmake \
-    # && rm -rf /var/cache/apt/*
-
-
 FROM base as development
-# RUN apt-get update \
-#     && apt-get install -y entr \
-#     && rm -rf /var/cache/apt/*
 
 RUN apt-get update \
     && apt-get install -y \
@@ -28,8 +21,8 @@ RUN chown -R dev:dev /app
 RUN echo "dev ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/dev && \
     chmod 0440 /etc/sudoers.d/dev
 
-COPY scripts ./scripts
-RUN chmod +x /app/scripts/*.sh
+# COPY scripts ./scripts
+# RUN chmod +x /app/scripts/*.sh
 
 USER dev
 SHELL ["/bin/bash", "-c"]
@@ -48,13 +41,11 @@ RUN git clone https://github.com/raysan5/raylib.git raylib \
     && mkdir build && cd build \
     && cmake -DBUILD_SHARED_LIBS=ON .. \
     && make \
-    && sudo make install
+    && sudo make install \
+    && cd ..
 
-# RUN git clone https://github.com/raysan5/raylib.git raylib \
-#     && cd raylib \
-#     && mkdir build && cd build \
-#     && cmake -DBUILD_SHARED_LIBS=ON .. \
-#     && make \
-#     && make install
+# RUN mkdir dist
+
+ENV LD_LIBRARY_PATH=/app/raylib/build/raylib
 
 CMD ["bash"]
