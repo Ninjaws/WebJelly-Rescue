@@ -9,7 +9,6 @@
     "runArgs": [
         "--name=jelly-rescue-dev-cont",
         "--net=host",
-        "--privileged",
         "--volume", "/tmp/.X11-unix:/tmp/.X11-unix",
         "--env", "DISPLAY=${localEnv:DISPLAY}"
     ],
