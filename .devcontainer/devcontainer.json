@@ -9,6 +9,8 @@
     "runArgs": [
         "--name=jelly-rescue-dev-cont",
         "--net=host",
+        "--privileged",
+        "--volume", "/dev/snd:/dev/snd",
         "--volume", "/tmp/.X11-unix:/tmp/.X11-unix",
         "--env", "DISPLAY=${localEnv:DISPLAY}"
     ],
@@ -18,6 +20,7 @@
         "source=./scripts,target=/app/scripts,type=bind",
         "source=./dist,target=/app/dist,type=bind"
     ],
+
     "customizations": {
         "vscode": {
             "settings": {},
