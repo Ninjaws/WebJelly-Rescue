@@ -1,22 +1,27 @@
 #include "Screen.h"
-#include <iostream>
+#include "AudioService.h"
+#include <optional>
 
-Screen::Screen() {
-
+void Screen::handleMusic()
+{
+    std::optional<Music> music = AudioService::getInstance().getMusic();
+    if(music.has_value()) {
+    UpdateMusicStream(music.value());
+    }
 }
 
-Screen::~Screen() {
+void Screen::draw()
+{
+    handleMusic();
+    BeginDrawing();
+    ClearBackground(BLACK);
 
-}
-
-void Screen::step() {
-
-}
-
-void Screen::logic() {
-
-}
-
-void Screen::draw() {
-    std::cout << "DURAWU" << std::endl;
+    if (text.size() > 0)
+    {
+        for (int t = 0; t < text.size(); t++)
+        {
+            text[t].draw();
+        }
+    }
+    EndDrawing();
 }

@@ -1,26 +1,29 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
+#include <vector>
+#include "Text.h"
+
 class Screen {
     private:
 
-        /**
-         * All the logic that concerns the screen currently visible to the player
-         */
-        virtual void logic();
-        /**
-         * Draws everything for the current screen
-         */
-        virtual void draw();
+        void handleMusic();
+
+    protected:
+        std::vector<Text> text;
+
     public:
-        Screen();
-        ~Screen();
-
+        Screen(){}
+        ~Screen(){}
 
         /**
-         * One step of the game loop
+         * Execute all logic for this frame
          */
-        virtual void step();
+        virtual void logic() = 0;
+        /**
+         * Draw frame to the screen
+         */
+        void draw();
 
 };
 

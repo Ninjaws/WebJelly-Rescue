@@ -8,7 +8,7 @@
 int main(void)
 {
     StateService& stateService = StateService::getInstance();
-    stateService.gameloop();
+    stateService.startGame();
     // std::cout << "StateService instance: " << service << std::endl;
   
     return 0;

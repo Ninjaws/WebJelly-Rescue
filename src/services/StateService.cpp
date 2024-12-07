@@ -3,48 +3,50 @@
 #include "TitleScreen.h"
 #include "MainScreen.h"
 
-StateService* StateService::instance = nullptr;
-
-void StateService::setScreen(ScreenState state)
+void StateService::setScreen(EScreen state)
 {
     switch (state)
     {
-    case ScreenState::TITLE:
+    case EScreen::TITLE:
         currentScreen = std::make_unique<TitleScreen>();
         break;
-    case ScreenState::MAIN:
+    case EScreen::MAIN:
         currentScreen = std::make_unique<MainScreen>();
         break;
     default:
-        currentScreen = std::make_unique<TitleScreen>(); // Default case
+        currentScreen = std::make_unique<TitleScreen>();
     }
-    // currentScreen = screen;
 }
 
-Screen* StateService::getScreen()
+Screen *StateService::getScreen()
 {
     return currentScreen.get();
 }
 
-void StateService::gameloop()
+void StateService::startGame()
 {
     InitAudioDevice();
     InitWindow(640, 544, "Jelly Rescue");
     SetTargetFPS(60);
 
-    setScreen(ScreenState::TITLE);
+    setScreen(EScreen::TITLE);
 
 #if defined(PLATFORM_WEB)
-    emscripten_set_main_loop(currentScreen->step, 0, 1);
+    emscripten_set_main_loop(step, 0, 1);
 #else
 
     while (!WindowShouldClose())
     {
-        currentScreen->step();
-        // UpdateDrawFrame();
+        step();
     }
 #endif
 
     CloseWindow();
     CloseAudioDevice();
+}
+
+void StateService::step()
+{
+    currentScreen->draw();
+    currentScreen->logic();
 }

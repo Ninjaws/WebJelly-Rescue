@@ -3,25 +3,22 @@
 
 #include "Screen.h"
 #include "raylib.h"
+#include "Text.h"
 #include <string>
+#include <vector>
 
 class TitleScreen : public Screen {
 private:
     Music bg;
-    Font font1;
-    Font font2;
-    std::string assetDir;
-    Vector2 dimTitle;
-Vector2 dimSub;
-Vector2 dimHead;
+    // std::vector<Text> text;
 
-    void logic() override;
-    void draw() override;
 public:
     TitleScreen();
     ~TitleScreen();
 
-    void step() override;
+    // void step() override;
+    void logic() override;
+    // void draw() override;
 };
 
 #endif

@@ -29,42 +29,30 @@ USER dev
 SHELL ["/bin/bash", "-c"]
 RUN g++ --version
 
-RUN git clone https://github.com/emscripten-core/emsdk.git && \
-    cd emsdk && \
+RUN git clone https://github.com/emscripten-core/emsdk.git libs/emsdk && \
+    cd libs/emsdk && \
     ./emsdk install latest && \
     ./emsdk activate latest && \
-    cd ..
+    cd ../..
 
-RUN echo 'source "/app/emsdk/emsdk_env.sh"' >> $HOME/.bash_profile
+RUN echo 'source "/app/libs/emsdk/emsdk_env.sh"' >> $HOME/.bash_profile
 # RUN source "/app/emsdk/emsdk_env.sh"
 
-RUN git clone https://github.com/raysan5/raylib.git raylib \
-    && cd raylib \
+RUN git clone https://github.com/raysan5/raylib.git libs/raylib \
+    && cd libs/raylib \
     && mkdir build && cd build \
     && cmake -DBUILD_SHARED_LIBS=OFF -DRAYLIB_STATIC=ON .. \
     && make \
     && sudo make install \
-    && cd ..
+    && cd ../..
 
 # RUN mkdir dist
 # && cmake -DBUILD_SHARED_LIBS=ON .. \
 
-ENV LD_LIBRARY_PATH=/app/raylib/build/raylib
+ENV LD_LIBRARY_PATH=/app/libs/raylib/build/raylib
 
-# RUN cd raylib/src
-# # Builds raylib for WebAssembly usage
-# RUN emcc -c rcore.c -Os -Wall -DPLATFORM_WEB -DGRAPHICS_API_OPENGL_ES2
-# RUN emcc -c rshapes.c -Os -Wall -DPLATFORM_WEB -DGRAPHICS_API_OPENGL_ES2
-# RUN emcc -c rtextures.c -Os -Wall -DPLATFORM_WEB -DGRAPHICS_API_OPENGL_ES2
-# RUN emcc -c rtext.c -Os -Wall -DPLATFORM_WEB -DGRAPHICS_API_OPENGL_ES2
-# RUN emcc -c rmodels.c -Os -Wall -DPLATFORM_WEB -DGRAPHICS_API_OPENGL_ES2
-# RUN emcc -c utils.c -Os -Wall -DPLATFORM_WEB
-# RUN emcc -c raudio.c -Os -Wall -DPLATFORM_WEB
-# RUN emar rcs libraylib.a rcore.o rshapes.o rtextures.o rtext.o rmodels.o utils.o raudio.o
-# RUN cd ../..
-
-RUN cd raylib/src && \
-    source /app/emsdk/emsdk_env.sh && \
+RUN cd libs/raylib/src && \
+    source /app/libs/emsdk/emsdk_env.sh && \
     emcc -c rcore.c -Os -Wall -DPLATFORM_WEB -DGRAPHICS_API_OPENGL_ES2 && \
     emcc -c rshapes.c -Os -Wall -DPLATFORM_WEB -DGRAPHICS_API_OPENGL_ES2 && \
     emcc -c rtextures.c -Os -Wall -DPLATFORM_WEB -DGRAPHICS_API_OPENGL_ES2 && \

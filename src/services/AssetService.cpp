@@ -1,33 +1,41 @@
 #include "AssetService.h"
 #include <iostream>
 
-void AssetService::setAssetDir(std::string newDir) {
-    assetDir = newDir;
-}
-
-void AssetService::setAssets() {
+AssetService::AssetService()
+{
     setAssetDir("assets/");
-
-    fonts.push_back(loadFont("Fonts/Gtek.ttf"));
-    fonts.push_back(loadFont("Fonts/Oxin.ttf"));
-    fonts.push_back(loadFont("Fonts/Reckoner_Bold.ttf"));
-    fonts.push_back(loadFont("Fonts/Reckoner.ttf"));
-    fonts.push_back(loadFont("Fonts/Sansation.ttf"));
-
-    music.push_back(loadMusic("Audio/Music/Crash_WarpRoomTheme.ogg", true));
+    setAssets();
 }
 
-Font AssetService::loadFont(std::string filename, int fontSize) {
-    Font font = LoadFontEx((assetDir + filename).c_str(), fontSize,0,0);
-    return font;
+
+void AssetService::setAssets()
+{
+    fonts[EFont::GTEK] = "Fonts/Gtek.ttf";
+    fonts[EFont::OXIN] = "Fonts/Oxin.ttf";
+    fonts[EFont::RECKONER_BOLD] = "Fonts/Reckoner_Bold.ttf";
+    fonts[EFont::RECKONER] = "Fonts/Reckoner.ttf";
+    fonts[EFont::SANSATION] = "Fonts/Sansation.ttf";
+
+    music[EMusic::MAIN] = loadMusic("Audio/Music/Crash_WarpRoomTheme.ogg", true);
+    music[EMusic::GAME] = loadMusic("Audio/Music/GameTheme_2.ogg", true);
+    music[EMusic::GAME_OVER] = loadMusic("Audio/Music/gameOverTheme.ogg", false);
 }
 
-Font AssetService::loadFont(std::string filename) {
-    Font font = LoadFont((assetDir + filename).c_str());
-    return font;
+Font AssetService::getFont(EFont font, int fontSize)
+{
+    std::string fontUrl = getFontUrl(font);
+    Font fnt = LoadFontEx(fontUrl.c_str(), fontSize, 0, 0);
+    SetTextureFilter(fnt.texture, TEXTURE_FILTER_BILINEAR);
+    return fnt;
 }
 
-Music AssetService::loadMusic(std::string filename, bool loops) {
+std::string AssetService::getFontUrl(EFont font)
+{
+    return assetDir + fonts[font];
+}
+
+Music AssetService::loadMusic(std::string filename, bool loops)
+{
     Music music = LoadMusicStream((assetDir + filename).c_str());
     music.looping = loops;
     return music;

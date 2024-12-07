@@ -1,46 +1,53 @@
 #include "MainScreen.h"
 #include "AssetService.h"
+#include "AudioService.h"
 #include <iostream>
 
-MainScreen::MainScreen() {
-    assetDir = "assets";
-    font1 = LoadFontEx((assetDir+"/Fonts/Reckoner_Bold.ttf").c_str(), 100,0,0);
-    SetTextureFilter(font1.texture, TEXTURE_FILTER_BILINEAR);
-    font2 = LoadFont((assetDir+"/Fonts/Sansation.ttf").c_str());
-    SetTextureFilter(font2.texture, TEXTURE_FILTER_BILINEAR);
-    dimTitle = MeasureTextEx(font1, "Jelly sadsdsdsdrescue", 100,0);
-    dimSub = MeasureTextEx(font2, "Press Entsder to continue", 30,0);
-    dimHead = MeasureTextEx(font2, "Made by Ian Vink", 20,0);
-    bg = LoadMusicStream((assetDir+"/Audio/Music/Crash_WarpRoomTheme.ogg").c_str());
-    bg.looping = true;
-    SetMasterVolume(1.0f);
-    SetMusicVolume(bg,1.0f);
-    PlayMusicStream(bg);
+MainScreen::MainScreen()
+{
+    const int TOP_GAP = 100;
+    const int BOTTOM_GAP = 50;
+    const int AMNT_OF_BUTTONS = 4;
+    const int TOTAL_SPACE = GetScreenHeight() - (TOP_GAP + BOTTOM_GAP);
+    const int SPACE_PER_ITEM = TOTAL_SPACE / AMNT_OF_BUTTONS;
+
+    for (int i = 0; i < AMNT_OF_BUTTONS; i++)
+    {
+        Text txt = Text("new game", EFont::GTEK, 30, 0, WHITE);
+        text.push_back(txt);
+    }
+
+    text[0].setColor(RED);
+    text[1].setText("load game");
+    text[2].setText("tutorial");
+    text[3].setText("quit");
+
+    for (int i = 0; i < AMNT_OF_BUTTONS; i++)
+    {
+        text[i].setPosition({(float)(GetScreenWidth() - text[i].getDimensions().x) / 2.0f, (float)TOP_GAP + SPACE_PER_ITEM * i});
+    }
+
+    /** Will be ignored if already active (like when coming from the TitleScreen) */
+    AudioService::getInstance().setMusic(EMusic::MAIN);
+    AudioService::getInstance().playMusic();
 }
 
-MainScreen::~MainScreen() {
-    UnloadMusicStream(bg);
-    UnloadFont(font1);
-    UnloadFont(font2);
+MainScreen::~MainScreen()
+{
 }
 
-void MainScreen::step() {
-    draw();
-    logic();
-}
+void MainScreen::logic()
+{
+    if (IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_UP))
+    {
+        text[hoveredButton].setColor(WHITE);
+        /** Move up or down depending on the pressed button. +4 is used so that -1 becomes 3 (the last button) */
+        hoveredButton = ((hoveredButton - (IsKeyPressed(KEY_DOWN) ? -1 : 1)) + 4) % 4;
+        text[hoveredButton].setColor(RED);
+    }
 
-void MainScreen::logic() {
-    // if(IsKeyPressed(KEY_ENTER)) {
-    //     std::cout << "Next screen!" << std::endl;
-    // }
-}
-
-void MainScreen::draw() {
-        UpdateMusicStream(bg);
-        BeginDrawing();
-        ClearBackground(BLACK);                
-        DrawTextEx(font2,"Made by Ian Vink", {((float)GetScreenWidth()-dimHead.x)/1.2f, (float(GetScreenHeight()-dimHead.y)/6.0f)}, 20, 0, WHITE);
-        DrawTextEx(font1,"Jelly rescue", {((float)GetScreenWidth()-dimTitle.x)/2.0f, (float(GetScreenHeight()-dimTitle.y)/2.0f)}, 100,0, {255,25,25,255});
-        DrawTextEx(font2,"Press Enter to continue", {((float)GetScreenWidth()-dimSub.x)/2.0f, (float(GetScreenHeight()-dimSub.y)/1.5f)}, 30, 0, WHITE);
-        EndDrawing();
+    if (IsKeyPressed(KEY_ENTER))
+    {
+        std::cout << text[hoveredButton].getText() << std::endl;
+    }
 }

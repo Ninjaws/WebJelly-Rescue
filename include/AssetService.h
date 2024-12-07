@@ -1,52 +1,40 @@
 #ifndef ASSET_SERVICE_H
 #define ASSET_SERVICE_H
 
+#include "raylib.h"
 #include <vector>
 #include <string>
-#include "raylib.h"
+#include <unordered_map>
+#include "EFont.h"
+#include "EMusic.h"
+#include "Service.h"
 
-class AssetService
+class AssetService: public Service<AssetService>
 {
 private:
-    AssetService() {
-        setAssets();
-    };
-    ~AssetService() = default;
+    /** Friend to allow access to the constructor */
+    friend class Service<AssetService>;
 
     std::string assetDir;
-    std::vector<Font> fonts;
+    std::unordered_map<EFont, std::string> fonts;
     std::vector<Sound> sounds;
-    std::vector<Music> music;
-public:
-    AssetService(const AssetService&) = delete;
-    AssetService& operator=(const AssetService&) = delete;
-
-    static AssetService& getInstance() {
-        static AssetService instance;
-        return instance;
-    }
-
-    std::vector<Font> getFonts() {
-        return fonts;
-    }
-
-    std::vector<Sound> getSounds() {
-        return sounds;
-    }
-
-    std::vector<Music> getMusic() {
-        return music;
-    }
+    std::unordered_map<EMusic, Music> music;
 
     void setAssets();
 
-    Font loadFont(std::string filename, int fontSize);
-    Font loadFont(std::string filename);
     Music loadMusic(std::string filename, bool loops);
     Sound loadSound(std::string filename);
+    std::string getFontUrl(EFont font);
+protected:
+    AssetService();
 
-    void setAssetDir(std::string assetDir);
+public:
+    void setAssetDir(std::string assetDir){this->assetDir = assetDir;}
 
+    Font getFont(EFont font, int fontSize);
+    Music getMusic(EMusic music) {
+        return this->music[music];
+    }
 };
 
 #endif
