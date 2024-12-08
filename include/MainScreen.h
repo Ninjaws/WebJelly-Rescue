@@ -9,6 +9,9 @@ class MainScreen : public Screen {
 private:
     int hoveredButton = 0;
 
+    void mouseLogic();
+    void keyboardLogic();
+
 public:
     MainScreen();
     ~MainScreen();

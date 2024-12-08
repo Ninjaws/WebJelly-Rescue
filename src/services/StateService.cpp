@@ -2,6 +2,8 @@
 #include "raylib.h"
 #include "TitleScreen.h"
 #include "MainScreen.h"
+#include <optional>
+#include "AudioService.h"
 
 void StateService::setScreen(EScreen state)
 {
@@ -12,6 +14,9 @@ void StateService::setScreen(EScreen state)
         break;
     case EScreen::MAIN:
         currentScreen = std::make_unique<MainScreen>();
+        break;
+    case EScreen::CLOSE:
+        gameRunning = false;
         break;
     default:
         currentScreen = std::make_unique<TitleScreen>();
@@ -35,7 +40,7 @@ void StateService::startGame()
     emscripten_set_main_loop(step, 0, 1);
 #else
 
-    while (!WindowShouldClose())
+    while (!WindowShouldClose() && gameRunning)
     {
         step();
     }
@@ -45,8 +50,18 @@ void StateService::startGame()
     CloseAudioDevice();
 }
 
+void StateService::handleMusic()
+{
+    std::optional<Music> music = AudioService::getInstance().getMusic();
+    if(music.has_value()) {
+    UpdateMusicStream(music.value());
+    }
+}
+
 void StateService::step()
 {
+    handleMusic();
     currentScreen->draw();
     currentScreen->logic();
 }
+

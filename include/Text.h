@@ -30,13 +30,18 @@ class Text {
             this->color = color;
         }
 
+        void setText(std::string text) {
+            this->text = text;
+        }
+
+        Vector2 getPosition() {
+            return position;
+        }
+
         std::string getText() {
             return this->text;
         }
 
-        void setText(std::string text) {
-            this->text = text;
-        }
 
         void draw(); 
 };

@@ -45,7 +45,7 @@ TitleScreen::~TitleScreen()
 
 void TitleScreen::logic()
 {
-    if (IsKeyPressed(KEY_ENTER))
+    if (IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
     {
         StateService::getInstance().setScreen(EScreen::MAIN);
         // std::cout << "Next screen!" << std::endl;

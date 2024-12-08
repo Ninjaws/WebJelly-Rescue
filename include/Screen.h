@@ -7,8 +7,6 @@
 class Screen {
     private:
 
-        void handleMusic();
-
     protected:
         std::vector<Text> text;
 

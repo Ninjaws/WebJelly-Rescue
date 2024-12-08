@@ -11,7 +11,8 @@ enum class EScreen {
     GAME,
     PAUSE,
     GAMEOVER,
-    VICTORY
+    VICTORY,
+    CLOSE
 };
 
 #endif

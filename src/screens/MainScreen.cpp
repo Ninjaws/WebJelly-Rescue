@@ -2,6 +2,7 @@
 #include "AssetService.h"
 #include "AudioService.h"
 #include <iostream>
+#include "StateService.h"
 
 MainScreen::MainScreen()
 {
@@ -38,6 +39,42 @@ MainScreen::~MainScreen()
 
 void MainScreen::logic()
 {
+    // Vector2 mouseD = GetMouseDelta();
+    // std::cout << mouseD.y <<std::endl;
+    // if (mouseD.x != 0.0f && mouseD.y != 0.0f)
+    // {
+        // mouseLogic();
+    // }
+
+    keyboardLogic();
+}
+
+void MainScreen::mouseLogic()
+{
+    for (int i = 0; i < text.size(); i++)
+    {
+        /** No need to check the button that is already being hovered */
+        if (hoveredButton == i)
+            continue;
+
+        Vector2 dim = text[i].getDimensions();
+        Vector2 pos = text[i].getPosition();
+        Rectangle rect = {pos.x, pos.y, dim.x, dim.y};
+
+        Vector2 mousePos = GetMousePosition();
+        // mousePos.x >= rect.x && mousePos.x <= (rect.x+rect.width) &&
+        if (mousePos.x >= rect.x && mousePos.x <= (rect.x+rect.width) && mousePos.y >= rect.y && mousePos.y <= (rect.y + rect.height))
+        {
+            text[hoveredButton].setColor(WHITE);
+            hoveredButton = i;
+            text[hoveredButton].setColor(RED);
+            break;
+        }
+    }
+}
+
+void MainScreen::keyboardLogic()
+{
     if (IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_UP))
     {
         text[hoveredButton].setColor(WHITE);
@@ -46,8 +83,21 @@ void MainScreen::logic()
         text[hoveredButton].setColor(RED);
     }
 
-    if (IsKeyPressed(KEY_ENTER))
+    if (IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
     {
         std::cout << text[hoveredButton].getText() << std::endl;
+        std::string selectedButton = text[hoveredButton].getText();
+
+
+        if(selectedButton == "new game") {
+        }
+        else if(selectedButton == "load game") {
+        }
+        else if(selectedButton == "tutorial") {
+            StateService::getInstance().setScreen(EScreen::TUTORIAL);
+        }
+        else if(selectedButton == "quit") {
+            StateService::getInstance().setScreen(EScreen::CLOSE);
+        }
     }
 }

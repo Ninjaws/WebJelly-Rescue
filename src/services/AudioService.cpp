@@ -1,12 +1,12 @@
 #include "AudioService.h"
 #include "AssetService.h"
 
-AudioService::~AudioService()
-{
-    if (!music.has_value())
-        return;
-    UnloadMusicStream(music.value());
-}
+// AudioService::~AudioService()
+// {
+//     if (!music.has_value())
+//         return;
+//     UnloadMusicStream(music.value());
+// }
 
 void AudioService::setMusic(EMusic music)
 {

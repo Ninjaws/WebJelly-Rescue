@@ -15,6 +15,15 @@ class StateService : public Service<StateService>
 {
 private:
     std::unique_ptr<Screen> currentScreen;
+
+    bool gameRunning = true;
+
+    /**
+     * One step of the gameloop
+     */
+    void step();
+
+    void handleMusic();
     
 public:
 
@@ -24,10 +33,6 @@ public:
      * Start the game loop
      */
     void startGame();
-    /**
-     * One step of the gameloop
-     */
-    void step();
 };
 
 #endif
