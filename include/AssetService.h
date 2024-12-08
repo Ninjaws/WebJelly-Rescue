@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include "EFont.h"
 #include "EMusic.h"
+#include "EBackground.h"
 #include "Service.h"
 
 class AssetService: public Service<AssetService>
@@ -19,6 +20,7 @@ private:
     std::unordered_map<EFont, std::string> fonts;
     std::vector<Sound> sounds;
     std::unordered_map<EMusic, Music> music;
+    std::unordered_map<EBackground, Texture2D> backgrounds;
 
     void setAssets();
 
@@ -35,6 +37,10 @@ public:
     Music getMusic(EMusic music) {
         return this->music[music];
     }
+    Texture2D getBackground(EBackground background){
+        return this->backgrounds[background];
+    }
+    Texture2D loadTexture(std::string filename);
 };
 
 #endif

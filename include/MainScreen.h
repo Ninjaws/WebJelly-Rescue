@@ -2,8 +2,6 @@
 #define MAIN_SCREEN_H
 
 #include "Screen.h"
-#include "raylib.h"
-#include <string>
 
 class MainScreen : public Screen {
 private:
@@ -11,10 +9,10 @@ private:
 
     void mouseLogic();
     void keyboardLogic();
+    void clickLogic();
 
 public:
     MainScreen();
-    ~MainScreen();
 
     void logic() override;
 };

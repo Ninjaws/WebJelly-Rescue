@@ -1,8 +1,7 @@
 #include "MainScreen.h"
-#include "AssetService.h"
 #include "AudioService.h"
-#include <iostream>
 #include "StateService.h"
+#include "raylib.h"
 
 MainScreen::MainScreen()
 {
@@ -17,7 +16,6 @@ MainScreen::MainScreen()
         Text txt = Text("new game", EFont::GTEK, 30, 0, WHITE);
         text.push_back(txt);
     }
-
     text[0].setColor(RED);
     text[1].setText("load game");
     text[2].setText("tutorial");
@@ -29,12 +27,12 @@ MainScreen::MainScreen()
     }
 
     /** Will be ignored if already active (like when coming from the TitleScreen) */
-    AudioService::getInstance().setMusic(EMusic::MAIN);
-    AudioService::getInstance().playMusic();
-}
-
-MainScreen::~MainScreen()
-{
+    EMusic track = AudioService::getInstance().getCurrentTrack();
+    if (track != EMusic::MAIN)
+    {
+        AudioService::getInstance().setMusic(EMusic::MAIN);
+        AudioService::getInstance().playMusic();
+    }
 }
 
 void MainScreen::logic()
@@ -43,10 +41,12 @@ void MainScreen::logic()
     // std::cout << mouseD.y <<std::endl;
     // if (mouseD.x != 0.0f && mouseD.y != 0.0f)
     // {
-        // mouseLogic();
+    mouseLogic();
     // }
 
     keyboardLogic();
+
+    clickLogic();
 }
 
 void MainScreen::mouseLogic()
@@ -57,13 +57,15 @@ void MainScreen::mouseLogic()
         if (hoveredButton == i)
             continue;
 
+        /** Pixels around the text that also count towards that button, to make the hover feel better */
+        int textPadding = 20;
         Vector2 dim = text[i].getDimensions();
         Vector2 pos = text[i].getPosition();
         Rectangle rect = {pos.x, pos.y, dim.x, dim.y};
 
         Vector2 mousePos = GetMousePosition();
         // mousePos.x >= rect.x && mousePos.x <= (rect.x+rect.width) &&
-        if (mousePos.x >= rect.x && mousePos.x <= (rect.x+rect.width) && mousePos.y >= rect.y && mousePos.y <= (rect.y + rect.height))
+        if ((mousePos.x + textPadding) >= rect.x && mousePos.x <= (rect.x + rect.width + textPadding) && (mousePos.y + textPadding) >= rect.y && mousePos.y <= (rect.y + rect.height + textPadding))
         {
             text[hoveredButton].setColor(WHITE);
             hoveredButton = i;
@@ -82,22 +84,22 @@ void MainScreen::keyboardLogic()
         hoveredButton = ((hoveredButton - (IsKeyPressed(KEY_DOWN) ? -1 : 1)) + 4) % 4;
         text[hoveredButton].setColor(RED);
     }
+}
 
+void MainScreen::clickLogic()
+{
     if (IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
     {
-        std::cout << text[hoveredButton].getText() << std::endl;
         std::string selectedButton = text[hoveredButton].getText();
 
-
-        if(selectedButton == "new game") {
+        if (selectedButton == "new game")
+            StateService::getInstance().setScreen(EScreen::GAME);
+        else if (selectedButton == "load game")
+        {
         }
-        else if(selectedButton == "load game") {
-        }
-        else if(selectedButton == "tutorial") {
+        else if (selectedButton == "tutorial")
             StateService::getInstance().setScreen(EScreen::TUTORIAL);
-        }
-        else if(selectedButton == "quit") {
+        else if (selectedButton == "quit")
             StateService::getInstance().setScreen(EScreen::CLOSE);
-        }
     }
 }

@@ -27,20 +27,11 @@ TitleScreen::TitleScreen()
     text.push_back(textCenter);
     text.push_back(testSub);
 
-
-    AudioService::getInstance().setMusic(EMusic::MAIN);
-    AudioService::getInstance().playMusic();
-
-    // bg = LoadMusicStream("assets/Audio/Music/Crash_WarpRoomTheme.ogg");
-    // bg.looping = true;
-    // SetMasterVolume(1.0f);
-    // SetMusicVolume(bg, 1.0f);
-    // PlayMusicStream(bg);
-}
-
-TitleScreen::~TitleScreen()
-{
-    // UnloadMusicStream(bg);
+    EMusic track = AudioService::getInstance().getCurrentTrack();
+    if (track != EMusic::MAIN) {
+        AudioService::getInstance().setMusic(EMusic::MAIN);
+        AudioService::getInstance().playMusic();
+    }
 }
 
 void TitleScreen::logic()

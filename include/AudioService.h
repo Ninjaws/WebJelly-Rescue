@@ -9,13 +9,10 @@
 class AudioService : public Service<AudioService>
 {
 private:
-    /** Friend to allow access to the destructor */
-    // friend class Service<AudioService>;
     std::optional<Music> music;
-    EMusic currentTrack;
+    EMusic currentTrack = EMusic::NONE;
 
 protected:
-    // ~AudioService();
 
 public:
     void setMusic(EMusic music);

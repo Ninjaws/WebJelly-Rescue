@@ -18,7 +18,7 @@ class Text {
 
     public:
         Text(std::string text, EFont font, int fontSize = 30, int spacing = 0, Color color = WHITE, Vector2 position = {100,100});
-        ~Text();
+        ~Text(){}
 
         Vector2 getDimensions();
 
@@ -41,7 +41,6 @@ class Text {
         std::string getText() {
             return this->text;
         }
-
 
         void draw(); 
 };

@@ -12,12 +12,6 @@ Text::Text(std::string text, EFont font, int fontSize, int spacing, Color color,
     this->position = position;
 }
 
-Text::~Text()
-{
-    // Causes double free for some reason
-    // UnloadFont(this->font);
-}
-
 Vector2 Text::getDimensions()
 {
     return MeasureTextEx(font, text.c_str(), (float)fontSize, (float)spacing);

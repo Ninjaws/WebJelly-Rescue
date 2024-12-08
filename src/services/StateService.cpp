@@ -2,6 +2,8 @@
 #include "raylib.h"
 #include "TitleScreen.h"
 #include "MainScreen.h"
+#include "TutorialScreen.h"
+#include "GameScreen.h"
 #include <optional>
 #include "AudioService.h"
 
@@ -14,6 +16,12 @@ void StateService::setScreen(EScreen state)
         break;
     case EScreen::MAIN:
         currentScreen = std::make_unique<MainScreen>();
+        break;
+    case EScreen::TUTORIAL:
+        currentScreen = std::make_unique<TutorialScreen>();
+        break;
+    case EScreen::GAME:
+        currentScreen = std::make_unique<GameScreen>();
         break;
     case EScreen::CLOSE:
         gameRunning = false;
@@ -31,7 +39,7 @@ Screen *StateService::getScreen()
 void StateService::startGame()
 {
     InitAudioDevice();
-    InitWindow(640, 544, "Jelly Rescue");
+    InitWindow(screenSize.x, screenSize.y, "Jelly Rescue");
     SetTargetFPS(60);
 
     setScreen(EScreen::TITLE);
@@ -53,8 +61,9 @@ void StateService::startGame()
 void StateService::handleMusic()
 {
     std::optional<Music> music = AudioService::getInstance().getMusic();
-    if(music.has_value()) {
-    UpdateMusicStream(music.value());
+    if (music.has_value())
+    {
+        UpdateMusicStream(music.value());
     }
 }
 
@@ -64,4 +73,3 @@ void StateService::step()
     currentScreen->draw();
     currentScreen->logic();
 }
-

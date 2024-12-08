@@ -3,15 +3,23 @@
 
 #include <vector>
 #include "Text.h"
+#include "raylib.h"
+#include <optional>
+#include "Background.h"
+#include "Map.h"
 
 class Screen {
     private:
 
     protected:
+        // std::optional<Map> map;
+        std::optional<Camera2D> camera;
+        std::optional<Map> map;
+        std::optional<Background> background;
         std::vector<Text> text;
 
     public:
-        Screen(){}
+        Screen();
         ~Screen(){}
 
         /**
