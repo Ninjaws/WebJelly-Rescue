@@ -6,6 +6,7 @@
 #include <memory>
 #include "EScreen.h"
 #include "Service.h"
+#include "raylib.h"
 
 #if defined(PLATFORM_WEB)
 #include <emscripten/emscripten.h>

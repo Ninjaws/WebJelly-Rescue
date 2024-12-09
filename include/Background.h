@@ -4,20 +4,40 @@
 #include "raylib.h"
 #include "EBackground.h"
 #include <vector>
+#include "TextureWrapper.h"
+#include "AssetService.h"
+#include "StateService.h"
 
 class Background {
-    private:
-        Vector2 position;
-        std::vector<Texture2D> textures;
-    protected:
     public:
-        Background(EBackground background);
-        Background(std::vector<EBackground> backgrounds);
+    Background() {
+
+    }
+        Background(EBackground background){
+            Texture2D texture = AssetService::getInstance().getBackground(background);
+            TextureWrapper wrapper = TextureWrapper(texture, StateService::getInstance().getScreenSize(), {0,0});
+            textures.push_back(wrapper);
+        }
+        Background(std::vector<TextureWrapper> backgrounds){
+            for(int i = 0; i < backgrounds.size(); i++) {
+                this->textures.push_back(backgrounds[i]);
+            }
+        }
         ~Background(){}
-        Vector2 getPosition();
-        void updatePosition(Vector2 deltaPos);
-        void setPosition(Vector2 position);
-        void draw();
+        // Vector2 getPosition();
+        // void updatePosition(Vector2 deltaPos);
+        // void setPosition(Vector2 position);
+        void draw(){
+            for(int i = 0; i < textures.size(); i++) {
+                TextureWrapper texture = textures[i];
+                // Rectangle sourceRect = {0, 0, texture.getSize().x, texture.getSize().y};
+                DrawTextureRec(texture.getTexture(), texture.getSourceRect(), texture.getPosition(),WHITE);
+            }
+        }
+    private:
+        std::vector<TextureWrapper> textures;
+        // Vector2 position;
+        // Vector2 size;
 };
 
 
