@@ -6,6 +6,12 @@
 #include "entities/Text.h"
 
 class MainScreen : public Screen {
+public:
+    MainScreen();
+
+    void logic() override;
+    void draw() override;
+
 private:
     int hoveredButton = 0;
     std::vector<Text> buttons;
@@ -13,12 +19,6 @@ private:
     void mouseLogic();
     void keyboardLogic();
     void clickLogic();
-
-public:
-    MainScreen();
-
-    void logic() override;
-    void draw() override;
 };
 
 #endif

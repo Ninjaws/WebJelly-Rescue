@@ -8,14 +8,6 @@
 #include "services/AssetService.h"
 
 class Text {
-    private:
-        std::string text;
-        Font font;
-        int fontSize;
-        int spacing;
-        Color color;
-        Vector2 position;
-
     public:
         Text(std::string text, EFont font, int fontSize = 30, int spacing = 0, Color color = WHITE, Vector2 position = {100,100});
         ~Text(){}
@@ -43,6 +35,14 @@ class Text {
         }
 
         void draw(); 
+
+    private:
+        std::string text;
+        Font font;
+        int fontSize;
+        int spacing;
+        Color color;
+        Vector2 position;
 };
 
 #endif

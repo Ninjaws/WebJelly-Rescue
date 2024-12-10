@@ -4,11 +4,13 @@
 #include <sstream>
 #include <iostream>
 #include "services/AssetService.h"
+#include "entities/Map.h"
 
 Map::Map()
 {
     loadTileset();
     loadMap();
+    loadColMap();
 }
 
 void Map::loadMap()
@@ -78,9 +80,51 @@ void Map::loadMap()
     }
 }
 
+void Map::loadColMap()
+{
+    std::vector<int> tempColMap;
+    std::ifstream openfile(AssetService::getInstance().getMapUrl(EMap::COLLISION));
+
+    colMap.clear();
+
+    if (openfile.is_open())
+    {
+        while (!openfile.eof())
+        {
+            std::string str;
+            std::getline(openfile, str);
+            std::stringstream stream(str);
+            std::string value;
+            while (std::getline(stream, value, ' '))
+            {
+                if (value.length() > 0)
+                {
+                    int tempValue = atoi(value.c_str());
+                    tempColMap.push_back(tempValue);
+                }
+            }
+            colMap.push_back(tempColMap);
+            tempColMap.clear();
+        }
+    }
+}
+
 void Map::loadTileset()
 {
     this->tileset = AssetService::getInstance().loadTexture("Textures/tileset.png");
+}
+
+std::unordered_map<ECorner, Vector2> Map::cornersToTilePos(std::unordered_map<ECorner, Vector2> corners)
+{
+    // std::cout << "Starting converting" << std::endl;
+    std::unordered_map<ECorner, Vector2> cornersTilePos;
+    for (const auto &pair : corners)
+    {
+        // std::cout << "Foreach pair" << std::endl;
+        Vector2 original = corners[pair.first];
+        cornersTilePos[pair.first] = {floorf(original.x / this->tileSize), floorf(original.y / this->tileSize)};
+    }
+    return cornersTilePos;
 }
 
 void Map::draw()
@@ -92,12 +136,45 @@ void Map::draw()
             if (map[i][j].x != -1 && map[i][j].y != -1)
             {
                 // Rectangle source = {0,0,32,32};
-                Rectangle sourceRect = {map[i][j].x * tileSize, map[i][j].y * tileSize, tileSize, tileSize};
-                DrawTextureRec(tileset, sourceRect, {j * tileSize, i * tileSize}, WHITE);
+                Rectangle sourceRect = {map[i][j].x * tileSize, map[i][j].y * tileSize, (float)tileSize, (float)tileSize};
+                DrawTextureRec(tileset, sourceRect, {(float)j * tileSize, (float)i * tileSize}, WHITE);
                 // tileSprites.setPosition(j * tileSize, i * tileSize);
                 // tileSprites.setTextureRect(sf::IntRect(map[i][j].x * tileSize, map[i][j].y * tileSize, tileSize, tileSize));
                 // GetWindow().draw(tileSprites);
             }
         }
     }
+}
+
+std::unordered_map<ECorner, bool> Map::checkForCollision(TextureWrapper texture)
+{
+    // std::cout << "Converting.." << std::endl;
+    std::unordered_map<ECorner, Vector2> cornersTilePos = cornersToTilePos(texture.getCorners());
+    // std::cout << "Done with converting" << std::endl;
+
+    std::unordered_map<ECorner, bool> cornerCollisions;
+
+     for (const auto &pair : cornersTilePos)
+    {
+        // std::cout << "foreach collision check" << std::endl;
+        Vector2 pos = cornersTilePos[pair.first];
+        // std::cout << pos.x << " " << pos.y << std::endl;
+        if(colMap[pos.y][pos.x] == 1) {
+            cornerCollisions[pair.first] = true;
+        } else {
+            cornerCollisions[pair.first] = false;
+        }    
+    }
+    // std::cout << "Finished collision checks" << std::endl;
+
+    return cornerCollisions;
+
+    // for (int i = 0; i < tiles.size(); i++)
+	// {
+	// 	if (colMap[tiles[i].y][tiles[i].x] == 1)
+	// 	{
+	// 		timesCollision.push_back(i);
+	// 	}
+	// }
+
 }

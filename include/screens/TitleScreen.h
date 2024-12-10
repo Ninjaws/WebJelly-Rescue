@@ -6,15 +6,15 @@
 #include "entities/Text.h"
 
 class TitleScreen : public Screen {
-private:
-    Music bg;
-    std::vector<Text> text;
-
 public:
     TitleScreen();
 
     void logic() override;
     void draw() override;
+
+private:
+    Music bg;
+    std::vector<Text> text;
 };
 
 #endif

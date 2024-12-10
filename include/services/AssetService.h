@@ -9,6 +9,7 @@
 #include "enums/EMusic.h"
 #include "enums/EBackground.h"
 #include "enums/EMap.h"
+#include "enums/ESprite.h"
 #include "services/Service.h"
 
 class AssetService: public Service<AssetService>
@@ -27,6 +28,9 @@ public:
     std::string getMapUrl(EMap map) {
         return this->assetDir + this->maps[map];
     }
+    Texture2D getSprite(ESprite sprite) {
+        return this->sprites[sprite];
+    }
 
 protected:
     AssetService();
@@ -41,6 +45,7 @@ private:
     std::unordered_map<EMusic, Music> music;
     std::unordered_map<EBackground, Texture2D> backgrounds;
     std::unordered_map<EMap, std::string> maps;
+    std::unordered_map<ESprite, Texture2D> sprites;
 
     void setAssets();
 

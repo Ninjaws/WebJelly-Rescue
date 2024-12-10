@@ -89,13 +89,4 @@ void StateService::step()
     handleMusic();
     currentScreen->draw();
     currentScreen->logic();
-    // if (IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-    // {
-    //     setScreen(EScreen::MAIN);
-    // }
-    // if(instance) {
-    //     instance->handleMusic();
-    //     instance->currentScreen->draw();
-    //     instance->currentScreen->logic();
-    // }
 }

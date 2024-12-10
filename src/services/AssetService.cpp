@@ -28,6 +28,21 @@ void AssetService::setAssets()
 
     maps[EMap::TEXTURE] = "Maps/map1.txt";
     maps[EMap::COLLISION] = "Maps/colmap1.txt";
+
+    sprites[ESprite::PLAYER] = loadTexture("Textures/player.png");
+    sprites[ESprite::PLAYER_GUN_LEFT] = loadTexture("Textures/gunleft.png");
+    sprites[ESprite::PLAYER_GUN_RIGHT] = loadTexture("Textures/gunright.png");
+    sprites[ESprite::ENEMY] = loadTexture("Textures/enemy.png");
+    sprites[ESprite::ENEMY_GUN_LEFT] = loadTexture("Textures/gunleft_2.png");
+    sprites[ESprite::ENEMY_GUN_RIGHT] = loadTexture("Textures/gunright_2.png");
+    sprites[ESprite::CRATE] = loadTexture("Textures/woodencrate.png");
+    sprites[ESprite::JELLY] = loadTexture("Textures/happyjelly.png");
+    sprites[ESprite::HEALTHPACK] = loadTexture("Textures/FirstAidKit.png");
+    sprites[ESprite::AMMOPACK] = loadTexture("Textures/Bullets_small.png");
+    sprites[ESprite::POWERUP] = loadTexture("Textures/powerUpAnimation.png");
+    sprites[ESprite::HUD_HEART] = loadTexture("Textures/heart.png");
+    sprites[ESprite::HUD_HEART_EMPTY] = loadTexture("Textures/heart_empty.png");
+    sprites[ESprite::HUD_AMMO] = loadTexture("Textures/bullet_hud.png");
 }
 
 Font AssetService::getFont(EFont font, int fontSize)

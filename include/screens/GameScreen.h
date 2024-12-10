@@ -6,13 +6,13 @@
 
 class GameScreen: public Screen {
 
-private:
-    Game game;
-protected:
 public:
     GameScreen();
     void logic() override;
     void draw() override;
+
+private:
+    Game game;
 };
 
 #endif

@@ -3,14 +3,6 @@
 
 class Screen
 {
-private:
-protected:
-    // std::optional<Map> map;
-    // std::optional<Camera2D> camera;
-    // std::optional<Map> map;
-    // std::optional<Background> background;
-    // std::vector<Text> text;
-
 public:
     Screen(){}
     ~Screen() {}
@@ -23,6 +15,9 @@ public:
      * Draw frame to the screen
      */
     virtual void draw() = 0;
+
+private:
+
 };
 
 #endif

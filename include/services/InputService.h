@@ -20,11 +20,13 @@ public:
     {
         this->watchedKeys.clear();
         this->keysPressed.clear();
+        this->keysDown.clear();
 
         for (int i = 0; i < keysToWatch.size(); i++)
         {
             this->watchedKeys.insert(keysToWatch[i]);
             this->keysPressed[keysToWatch[i]] = false;
+            this->keysDown[keysToWatch[i]] = false;
         }
 
         setMouseButtonsToWatch(mouseButtonsToWatch);
@@ -42,9 +44,14 @@ public:
         for (auto key : watchedKeys)
         {
             keysPressed[key] = false;
+            keysDown[key] = false;
             if (IsKeyPressed(key))
             {
                 keysPressed[key] = true;
+            }
+            if (IsKeyDown(key)) 
+            {
+                keysDown[key] = true;
             }
         }
         for (auto button : watchedMouseButtons)
@@ -62,6 +69,10 @@ public:
         return keysPressed[key];
     }
 
+    bool isKeyDown(KeyboardKey key) {
+        return keysDown[key];
+    }
+
     bool isMouseButtonPressed(MouseButton button)
     {
         return mouseButtonsPressed[button];
@@ -70,6 +81,7 @@ public:
 private:
     std::unordered_set<KeyboardKey> watchedKeys;
     std::unordered_map<KeyboardKey, bool> keysPressed;
+    std::unordered_map<KeyboardKey, bool> keysDown;
     std::unordered_set<MouseButton> watchedMouseButtons;
     std::unordered_map<MouseButton, bool> mouseButtonsPressed;
 
