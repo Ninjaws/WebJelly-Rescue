@@ -27,7 +27,6 @@ public:
 		gravity();
 		movement();
 		handleCollision();
-		applyVelocity();
 	}
 
 	void draw()
@@ -42,7 +41,6 @@ public:
 
 protected:
 private:
-	// Vector2 position;
 	TextureWrapper texture;
 	Vector2 velocity = {0, 0};
 
@@ -53,114 +51,73 @@ private:
 	 * Holds the corners of the player
 	 * Is used for precise collision detection
 	 */
-	// Keeps tracko f whether or not the player has collided with the top of the crate
-	// std::unordered_map<Vector2, >
 
 	void gravity()
 	{
-
-		// PositionUpdate();
-		// Collision();
-
-		// if (!groundCollision && !crateTopCollision)
-		// {
 		if (!groundCollision)
 		{
 			velocity.y += 0.6f;
 		}
 		else
 		{
-			velocity.y = 0.0f;
+			// velocity.y = 0.0f;
 		}
-
-		// if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && (groundCollision == true || crateTopCollision == true))
-		// {
-		// 	velocity.y = -GetJumpSpeed();
-		// }
-
-		// this->texture.move(velocity);
 	}
 
 	void movement()
 	{
 		velocity.x = 0.0f;
-		if (InputService::getInstance().isKeyDown(KEY_A)) {
-			// std::cout << "Left" << std::endl;
-			velocity.x -= 3.0f;
-		} else if (InputService::getInstance().isKeyDown(KEY_D)) {
-			velocity.x += 3.0f;
-			// std::cout << "Right" << std::endl;
+		if (InputService::getInstance().isKeyDown(KEY_A))
+		{
+			velocity.x -= 5.0f;
+		}
+		else if (InputService::getInstance().isKeyDown(KEY_D))
+		{
+			velocity.x += 5.0f;
 		}
 
-		if(InputService::getInstance().isKeyPressed(KEY_SPACE) && groundCollision) {
+		if (InputService::getInstance().isKeyPressed(KEY_SPACE) && groundCollision)
+		{
 			velocity.y -= 7.2f;
 		}
-
-		this->texture.move(velocity);
 	}
 
+	/**
+	 * Stores the current position
+	 * Applies the current velocity
+	 * Checks for collision, and removes all velocities that are causing collisions
+	 * Set the object exactly against the object it is colliding with position
+	 */
 	void handleCollision()
 	{
+		Vector2 tempPos = this->texture.getPosition();
+		this->texture.move(velocity);
+
 		groundCollision = false;
 		std::unordered_map<ECorner, bool> collisions = MapService::getInstance().getMap().checkForCollision(this->texture);
 
 		if (collisions[ECorner::BOTTOM_LEFT] || collisions[ECorner::BOTTOM_RIGHT])
 		{
-			this->texture.move({0, -velocity.y});
 			velocity.y = 0.0f;
 			groundCollision = true;
+			this->texture.setPosition({this->texture.getPosition().x, floorf(this->texture.getPosition().y / MapService::getInstance().getMap().getTileSize()) * MapService::getInstance().getMap().getTileSize()});
 		}
-		if (collisions[ECorner::LEFT_TOP] && collisions[ECorner::LEFT_BOTTOM]) {
-			this->texture.move({+velocity.x, 0});
+		if (collisions[ECorner::LEFT_TOP] && collisions[ECorner::LEFT_BOTTOM])
+		{
 			velocity.x = 0.0f;
+			this->texture.setPosition({ceilf(this->texture.getPosition().x / MapService::getInstance().getMap().getTileSize()) * MapService::getInstance().getMap().getTileSize(), this->texture.getPosition().y});
 		}
-		if (collisions[ECorner::TOP_LEFT] || collisions[ECorner::TOP_RIGHT]) {
-			this->texture.move({0, +velocity.y});
+		if (collisions[ECorner::TOP_LEFT] || collisions[ECorner::TOP_RIGHT])
+		{
 			velocity.y = 0.0f;
+			this->texture.setPosition({this->texture.getPosition().x, (ceilf(this->texture.getPosition().y / MapService::getInstance().getMap().getTileSize())) * MapService::getInstance().getMap().getTileSize()});
 		}
-		if (collisions[ECorner::RIGHT_TOP] && collisions[ECorner::RIGHT_BOTTOM]) {
-			this->texture.move({-velocity.x, 0});
+		if (collisions[ECorner::RIGHT_TOP] && collisions[ECorner::RIGHT_BOTTOM])
+		{
 			velocity.x = 0.0f;
+			this->texture.setPosition({floorf(this->texture.getPosition().x / MapService::getInstance().getMap().getTileSize()) * MapService::getInstance().getMap().getTileSize(), this->texture.getPosition().y});
 		}
 	}
-
-	void applyVelocity() {
-		// std::cout << velocity.x << std::endl;
-		this->texture.move(velocity);
-	}
-
-	// timesCollision.clear();
-
-	// for (int i = 0; i < tiles.size(); i++)
-	// {
-	// 	if (GetColMap()[tiles[i].y][tiles[i].x] == 1)
-	// 	{
-	// 		timesCollision.push_back(i);
-	// 	}
-	// }
-
-	// groundCollision = false;
-
-	// if (timesCollision.size() > 0)
-	// {
-	// 	for (int i = 0; i < timesCollision.size(); i++)
-	// 	{
-	// 		if (timesCollision[i] == 0 || timesCollision[i] == 1)						//Topleft and Topright
-	// 		{
-	// 			velocity.y = 0;
-	// 		}
-	// 		else if (timesCollision[i] == 2 || timesCollision[i] == 3 ||				//Lefttop and Leftbottom
-	// 			timesCollision[i] == 4 || timesCollision[i] == 5)						//Righttop and Lefttop
-	// 		{
-	// 			velocity.x = 0;
-	// 		}
-	// 		else if (timesCollision[i] == 6 || timesCollision[i] == 7)					 //Bottomleft and Bottomright
-	// 		{
-	// 			groundCollision = true;
-	// 		}
-	// 	}
-	// }
-	// }
 };
 
 #endif

@@ -20,6 +20,10 @@ public:
     /** Checks and returns which corners of the object have been collided with */
     std::unordered_map<ECorner, bool> checkForCollision(TextureWrapper texture);
 
+    int getTileSize() {
+        return this->tileSize;
+    }
+
 private:
     /** Holds the number for every single tile, which refers to a certain sprite in the tileset */
     std::vector<std::vector<Vector2>> map;

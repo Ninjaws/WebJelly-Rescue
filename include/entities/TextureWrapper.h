@@ -52,7 +52,7 @@ class TextureWrapper {
         float right = this->position.x+this->size.x;
         float bottom = this->position.y + this->size.y;
         float left = this->position.x;
-        float margin = 5; // Space to the corner
+        float margin = 8; // Space to the corner
 		corners[ECorner::TOP_LEFT] = {left+margin, top};
 		corners[ECorner::TOP_RIGHT] = {right-margin, top};
         corners[ECorner::RIGHT_TOP] = {right, top+margin};
