@@ -1,7 +1,8 @@
-#include "MainScreen.h"
-#include "AudioService.h"
-#include "StateService.h"
+#include "screens/MainScreen.h"
+#include "services/AudioService.h"
+#include "services/StateService.h"
 #include "raylib.h"
+#include "services/InputService.h"
 
 MainScreen::MainScreen()
 {
@@ -33,6 +34,8 @@ MainScreen::MainScreen()
         AudioService::getInstance().setMusic(EMusic::MAIN);
         AudioService::getInstance().playMusic();
     }
+
+    InputService::getInstance().setKeysToWatch({KEY_ENTER, KEY_UP, KEY_DOWN}, {MOUSE_BUTTON_LEFT});
 }
 
 void MainScreen::logic()
@@ -78,18 +81,18 @@ void MainScreen::mouseLogic()
 
 void MainScreen::keyboardLogic()
 {
-    if (IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_UP))
+    if (InputService::getInstance().isKeyPressed(KEY_DOWN) || InputService::getInstance().isKeyPressed(KEY_UP))
     {
         buttons[hoveredButton].setColor(WHITE);
         /** Move up or down depending on the pressed button. +4 is used so that -1 becomes 3 (the last button) */
-        hoveredButton = ((hoveredButton - (IsKeyPressed(KEY_DOWN) ? -1 : 1)) + 4) % 4;
+        hoveredButton = ((hoveredButton - (InputService::getInstance().isKeyPressed(KEY_DOWN) ? -1 : 1)) + 4) % 4;
         buttons[hoveredButton].setColor(RED);
     }
 }
 
 void MainScreen::clickLogic()
 {
-    if (IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+    if (InputService::getInstance().isKeyPressed(KEY_ENTER) || InputService::getInstance().isMouseButtonPressed(MOUSE_BUTTON_LEFT))
     {
         std::string selectedButton = buttons[hoveredButton].getText();
 

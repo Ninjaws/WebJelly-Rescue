@@ -1,9 +1,9 @@
 #ifndef MAIN_SCREEN_H
 #define MAIN_SCREEN_H
 
-#include "Screen.h"
+#include "screens/Screen.h"
 #include <vector>
-#include "Text.h"
+#include "entities/Text.h"
 
 class MainScreen : public Screen {
 private:

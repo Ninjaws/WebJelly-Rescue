@@ -1,9 +1,9 @@
-#include "Map.h"
+#include "entities/Map.h"
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include "AssetService.h"
+#include "services/AssetService.h"
 
 Map::Map()
 {
@@ -14,7 +14,7 @@ Map::Map()
 void Map::loadMap()
 {
     std::vector<Vector2> tempMap;
-    std::ifstream openfile("assets/Maps/map1.txt");
+    std::ifstream openfile(AssetService::getInstance().getMapUrl(EMap::TEXTURE));
 
     map.clear();
 

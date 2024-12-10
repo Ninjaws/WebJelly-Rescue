@@ -1,6 +1,6 @@
-#include "GameScreen.h"
-#include "Map.h"
-#include "StateService.h"
+#include "screens/GameScreen.h"
+#include "entities/Map.h"
+#include "services/StateService.h"
 
 GameScreen::GameScreen()
 {

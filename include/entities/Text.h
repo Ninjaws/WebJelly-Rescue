@@ -2,10 +2,10 @@
 #define TEXT_H
 
 #include "raylib.h"
-#include "EFont.h"
+#include "enums/EFont.h"
 #include <string>
 #include <iostream>
-#include "AssetService.h"
+#include "services/AssetService.h"
 
 class Text {
     private:

@@ -1,8 +1,9 @@
-#include "TutorialScreen.h"
+#include "screens/TutorialScreen.h"
 
-#include "StateService.h"
-#include "EFont.h"
-#include "EScreen.h"
+#include "services/StateService.h"
+#include "enums/EFont.h"
+#include "enums/EScreen.h"
+#include "services/InputService.h"
 
 TutorialScreen::TutorialScreen() {
     Text textBack = Text("Press Enter to go back", EFont::SANSATION, 30, 0, RED);
@@ -11,11 +12,13 @@ TutorialScreen::TutorialScreen() {
     this->text.push_back(textBack);
 
     this->background = Background(EBackground::TUTORIAL);
+
+    InputService::getInstance().setKeysToWatch({KEY_ENTER}, {MOUSE_BUTTON_LEFT});
 }
 
 void TutorialScreen::logic()
 {
-    if (IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+    if ( InputService::getInstance().isKeyPressed(KEY_ENTER) || InputService::getInstance().isMouseButtonPressed(MOUSE_BUTTON_LEFT))
     {
         StateService::getInstance().setScreen(EScreen::MAIN);
     }

@@ -5,7 +5,7 @@
 
 class TextureWrapper {
     public:
-        TextureWrapper(Texture2D texture, Vector2 size = {32,32}, Vector2 position = {0,0}, Rectangle sourceRect = {0,0,100,100}) {
+        TextureWrapper(Texture2D texture, Vector2 size = {32,32}, Vector2 position = {0,0}, Rectangle sourceRect = {0,0,32,32}) {
             this->texture = texture;
             this->size = size;
             this->position = position;

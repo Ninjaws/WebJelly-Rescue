@@ -1,11 +1,12 @@
-#include "StateService.h"
+#include "services/StateService.h"
 #include "raylib.h"
-#include "TitleScreen.h"
-#include "MainScreen.h"
-#include "TutorialScreen.h"
-#include "GameScreen.h"
+#include "screens/TitleScreen.h"
+#include "screens/MainScreen.h"
+#include "screens/TutorialScreen.h"
+#include "screens/GameScreen.h"
 #include <optional>
-#include "AudioService.h"
+#include "services/AudioService.h"
+#include "services/InputService.h"
 
 void StateService::setScreen(EScreen state)
 {
@@ -38,16 +39,30 @@ Screen *StateService::getScreen()
 
 void StateService::startGame()
 {
+    // if(!instance)
+    //     return;
     InitAudioDevice();
+    // InitWindow(640,544, "Jelly Rescue");
     InitWindow(screenSize.x, screenSize.y, "Jelly Rescue");
     SetTargetFPS(60);
+
+    // #if defined(PLATFORM_WEB)
+    //  emscripten_set_keypress_callback(EMSCRIPTEN_EVENT_TARGET_CANVAS, nullptr, 1, staticStep);
+    //  #endif
+
+    // #if defined(PLATFORM_WEB)
+    //     emscripten_set_focusin_callback(EMSCRIPTEN_EVENT_TARGET_CANVAS, nullptr, 1, [](const EmscriptenFocusEvent* event) {
+    //     std::cout << "Canvas Focused!" << std::endl;
+    // });
+    // #endif
 
     setScreen(EScreen::TITLE);
 
 #if defined(PLATFORM_WEB)
-    emscripten_set_main_loop(step, 0, 1);
+    emscripten_set_main_loop(StateService::staticStep, 0, 1);
 #else
 
+    // while (!WindowShouldClose() && instance->gameRunning)
     while (!WindowShouldClose() && gameRunning)
     {
         step();
@@ -69,7 +84,18 @@ void StateService::handleMusic()
 
 void StateService::step()
 {
+    InputService::getInstance().checkKeys();
+
     handleMusic();
     currentScreen->draw();
     currentScreen->logic();
+    // if (IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+    // {
+    //     setScreen(EScreen::MAIN);
+    // }
+    // if(instance) {
+    //     instance->handleMusic();
+    //     instance->currentScreen->draw();
+    //     instance->currentScreen->logic();
+    // }
 }

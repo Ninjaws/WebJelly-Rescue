@@ -4,11 +4,6 @@
 template <typename T>
 class Service
 {
-private:
-protected:
-    static T* instance;
-    Service() {}
-
 public:
     Service(const Service &) = delete;
     Service &operator=(const Service &) = delete;
@@ -18,6 +13,13 @@ public:
         static T instance;
         return instance;
     }
+    
+protected:
+    static T* instance;
+    Service() {}
+
+private:
+
 };
 
 #endif

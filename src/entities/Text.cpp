@@ -1,4 +1,4 @@
-#include "Text.h"
+#include "entities/Text.h"
 
 Text::Text(std::string text, EFont font, int fontSize, int spacing, Color color, Vector2 position)
 {

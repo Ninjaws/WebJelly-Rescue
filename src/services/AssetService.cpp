@@ -1,5 +1,5 @@
-#include "AssetService.h"
-
+#include "services/AssetService.h"
+#include <iostream>
 AssetService::AssetService()
 {
     setAssetDir("assets/");
@@ -25,6 +25,9 @@ void AssetService::setAssets()
     backgrounds[EBackground::GAME2] = loadTexture("Textures/GameBackground_2.jpg");
     backgrounds[EBackground::GAME3] = loadTexture("Textures/GameBackground_3.png");
     backgrounds[EBackground::VICTORY] = loadTexture("Textures/VictoryScreenBackground.png");
+
+    maps[EMap::TEXTURE] = "Maps/map1.txt";
+    maps[EMap::COLLISION] = "Maps/colmap1.txt";
 }
 
 Font AssetService::getFont(EFont font, int fontSize)

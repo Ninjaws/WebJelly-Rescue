@@ -2,18 +2,12 @@
 #define AUDIO_SERVICE_H
 
 #include "raylib.h"
-#include "EMusic.h"
-#include "Service.h"
+#include "enums/EMusic.h"
+#include "services/Service.h"
 #include <optional>
 
 class AudioService : public Service<AudioService>
 {
-private:
-    std::optional<Music> music;
-    EMusic currentTrack = EMusic::NONE;
-
-protected:
-
 public:
     void setMusic(EMusic music);
     std::optional<Music> getMusic(){return music;}
@@ -24,6 +18,13 @@ public:
 
     void playSound();
     void stopSounds();
+
+protected:
+
+private:
+    std::optional<Music> music;
+    EMusic currentTrack = EMusic::NONE;
+
 };
 
 #endif

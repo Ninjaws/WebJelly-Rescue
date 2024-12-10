@@ -1,9 +1,9 @@
 #ifndef TUTORIAL_SCREEN_H
 #define TUTORIAL_SCREEN_H
 
-#include "Screen.h"
-#include "Background.h"
-#include "Text.h"
+#include "screens/Screen.h"
+#include "entities/Background.h"
+#include "entities/Text.h"
 
 class TutorialScreen : public Screen
 {

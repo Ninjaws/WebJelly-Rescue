@@ -2,11 +2,11 @@
 #define BACKGROUND_H
 
 #include "raylib.h"
-#include "EBackground.h"
+#include "enums/EBackground.h"
 #include <vector>
-#include "TextureWrapper.h"
-#include "AssetService.h"
-#include "StateService.h"
+#include "entities/TextureWrapper.h"
+#include "services/AssetService.h"
+#include "services/StateService.h"
 
 class Background {
     public:
@@ -14,8 +14,9 @@ class Background {
 
     }
         Background(EBackground background){
-            Texture2D texture = AssetService::getInstance().getBackground(background);
-            TextureWrapper wrapper = TextureWrapper(texture, StateService::getInstance().getScreenSize(), {0,0});
+            // Texture2D texture = AssetService::getInstance().getBackground(background);
+            TextureWrapper wrapper = TextureWrapper(AssetService::getInstance().getBackground(background), StateService::getInstance().getScreenSize(), {0,0});
+            wrapper.setSourceRect({0,0,wrapper.getSize().x, wrapper.getSize().y});
             textures.push_back(wrapper);
         }
         Background(std::vector<TextureWrapper> backgrounds){

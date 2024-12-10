@@ -1,6 +1,6 @@
-#include "Background.h"
+#include "entities/Background.h"
 
-#include "AssetService.h"
+#include "services/AssetService.h"
 
 // Background::Background(EBackground background)
 // {

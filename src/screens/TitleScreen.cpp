@@ -1,9 +1,10 @@
-#include "TitleScreen.h"
-#include "AssetService.h"
-#include "StateService.h"
-#include "EFont.h"
-#include "AudioService.h"
+#include "screens/TitleScreen.h"
+#include "services/AssetService.h"
+#include "services/StateService.h"
+#include "enums/EFont.h"
+#include "services/AudioService.h"
 #include <iostream>
+#include "services/InputService.h"
 
 TitleScreen::TitleScreen()
 {
@@ -27,14 +28,16 @@ TitleScreen::TitleScreen()
         AudioService::getInstance().setMusic(EMusic::MAIN);
         AudioService::getInstance().playMusic();
     }
+
+    InputService::getInstance().setKeysToWatch({KEY_ENTER}, {MOUSE_BUTTON_LEFT});
 }
 
 void TitleScreen::logic()
 {
-    if (IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+        // std::cout << "Next screen!" << std::endl;
+    if (InputService::getInstance().isKeyPressed(KEY_ENTER) || InputService::getInstance().isMouseButtonPressed(MOUSE_BUTTON_LEFT))
     {
         StateService::getInstance().setScreen(EScreen::MAIN);
-        // std::cout << "Next screen!" << std::endl;
     }
 }
 

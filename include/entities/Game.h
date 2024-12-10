@@ -1,9 +1,10 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "Map.h"
-#include "Background.h"
-#include "StateService.h"
+#include "entities/Map.h"
+#include "entities/Background.h"
+#include "services/StateService.h"
+#include "services/AudioService.h"
 
 class Game
 {
@@ -16,7 +17,7 @@ public:
         wrapper2.setSourceRect({0,200,wrapper2.getSize().x, 200+wrapper2.getSize().y});
         TextureWrapper wrapper3 = TextureWrapper(AssetService::getInstance().getBackground(EBackground::GAME3), {1792.0f,(float)GetScreenHeight()}, {wrapper1.getSize().x+wrapper2.getSize().x,0.0});
         wrapper3.setSourceRect({64,200,64+wrapper3.getSize().x, 200+wrapper3.getSize().y});
-       
+
         std::vector<TextureWrapper> wrappers;
         wrappers.push_back(wrapper1);
         wrappers.push_back(wrapper2);
@@ -31,6 +32,9 @@ public:
         camera.rotation = 0.0f;
         camera.zoom = 1.0f;
         this->camera = camera;
+
+        AudioService::getInstance().setMusic(EMusic::GAME);
+        AudioService::getInstance().playMusic();
     }
     ~Game()
     {
