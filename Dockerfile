@@ -1,13 +1,6 @@
 FROM gcc:latest as base
 
-# RUN apt-get install cmake \
-    # && rm -rf /var/cache/apt/*
-
-
 FROM base as development
-# RUN apt-get update \
-#     && apt-get install -y entr \
-#     && rm -rf /var/cache/apt/*
 
 RUN apt-get update \
     && apt-get install -y \
@@ -16,6 +9,7 @@ RUN apt-get update \
     libasound2-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev \
     libglu1-mesa-dev libxcursor-dev libxinerama-dev libwayland-dev libxkbcommon-dev \
     sudo \
+    alsa-utils \
     && rm -rf /var/cache/apt/*
 
 
@@ -28,33 +22,45 @@ RUN chown -R dev:dev /app
 RUN echo "dev ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/dev && \
     chmod 0440 /etc/sudoers.d/dev
 
-COPY scripts ./scripts
-RUN chmod +x /app/scripts/*.sh
+# COPY scripts ./scripts
+# RUN chmod +x /app/scripts/*.sh
 
 USER dev
 SHELL ["/bin/bash", "-c"]
 RUN g++ --version
 
-RUN git clone https://github.com/emscripten-core/emsdk.git && \
-    cd emsdk && \
+RUN git clone https://github.com/emscripten-core/emsdk.git libs/emsdk && \
+    cd libs/emsdk && \
     ./emsdk install latest && \
     ./emsdk activate latest && \
-    cd ..
+    cd ../..
 
-RUN echo 'source "/app/emsdk/emsdk_env.sh"' >> $HOME/.bash_profile
+RUN echo 'source "/app/libs/emsdk/emsdk_env.sh"' >> $HOME/.bash_profile
+# RUN source "/app/emsdk/emsdk_env.sh"
 
-RUN git clone https://github.com/raysan5/raylib.git raylib \
-    && cd raylib \
+RUN git clone https://github.com/raysan5/raylib.git libs/raylib \
+    && cd libs/raylib \
     && mkdir build && cd build \
-    && cmake -DBUILD_SHARED_LIBS=ON .. \
+    && cmake -DBUILD_SHARED_LIBS=OFF -DRAYLIB_STATIC=ON .. \
     && make \
-    && sudo make install
+    && sudo make install \
+    && cd ../..
 
-# RUN git clone https://github.com/raysan5/raylib.git raylib \
-#     && cd raylib \
-#     && mkdir build && cd build \
-#     && cmake -DBUILD_SHARED_LIBS=ON .. \
-#     && make \
-#     && make install
+# RUN mkdir dist
+# && cmake -DBUILD_SHARED_LIBS=ON .. \
+
+ENV LD_LIBRARY_PATH=/app/libs/raylib/build/raylib
+
+RUN cd libs/raylib/src && \
+    source /app/libs/emsdk/emsdk_env.sh && \
+    emcc -c rcore.c -Os -Wall -DPLATFORM_WEB -DGRAPHICS_API_OPENGL_ES2 && \
+    emcc -c rshapes.c -Os -Wall -DPLATFORM_WEB -DGRAPHICS_API_OPENGL_ES2 && \
+    emcc -c rtextures.c -Os -Wall -DPLATFORM_WEB -DGRAPHICS_API_OPENGL_ES2 && \
+    emcc -c rtext.c -Os -Wall -DPLATFORM_WEB -DGRAPHICS_API_OPENGL_ES2 && \
+    emcc -c rmodels.c -Os -Wall -DPLATFORM_WEB -DGRAPHICS_API_OPENGL_ES2 && \
+    emcc -c utils.c -Os -Wall -DPLATFORM_WEB && \
+    emcc -c raudio.c -Os -Wall -DPLATFORM_WEB && \
+    emar rcs libraylib.a rcore.o rshapes.o rtextures.o rtext.o rmodels.o utils.o raudio.o && \
+    cd ../..
 
 CMD ["bash"]

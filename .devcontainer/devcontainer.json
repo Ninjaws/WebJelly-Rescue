@@ -8,12 +8,21 @@
     },
     "runArgs": [
         "--name=jelly-rescue-dev-cont",
-        "--net=host"
+        "--net=host",
+        "--privileged",
+        "--volume", "/dev/snd:/dev/snd",
+        "--volume", "/tmp/.X11-unix:/tmp/.X11-unix",
+        "--env", "DISPLAY=${localEnv:DISPLAY}"
     ],
     "workspaceFolder": "/app",
     "mounts": [
-        "source=./src,target=/app/src,type=bind"
+        "source=./src,target=/app/src,type=bind",
+        "source=./scripts,target=/app/scripts,type=bind",
+        "source=./dist,target=/app/dist,type=bind",
+        "source=./assets,target=/app/assets,type=bind",
+        "source=./include,target=/app/include,type=bind"
     ],
+
     "customizations": {
         "vscode": {
             "settings": {},
@@ -24,6 +33,4 @@
             ]
         }
     },
-    // "postCreateCommand": "/app/scripts/emsdk_setup.sh",
-    //"postStartCommand": "/app/scripts/emsdk_activate.sh"
 }
