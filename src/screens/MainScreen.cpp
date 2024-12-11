@@ -35,7 +35,7 @@ MainScreen::MainScreen()
         AudioService::getInstance().playMusic();
     }
 
-    InputService::getInstance().setKeysToWatch({KEY_ENTER, KEY_UP, KEY_DOWN}, {MOUSE_BUTTON_LEFT});
+    InputService::getInstance().setKeysToWatch({KEY_ENTER, KEY_W, KEY_S}, {MOUSE_BUTTON_LEFT});
 }
 
 void MainScreen::logic()
@@ -81,11 +81,11 @@ void MainScreen::mouseLogic()
 
 void MainScreen::keyboardLogic()
 {
-    if (InputService::getInstance().isKeyPressed(KEY_DOWN) || InputService::getInstance().isKeyPressed(KEY_UP))
+    if (InputService::getInstance().isKeyPressed(KEY_S) || InputService::getInstance().isKeyPressed(KEY_W))
     {
         buttons[hoveredButton].setColor(WHITE);
         /** Move up or down depending on the pressed button. +4 is used so that -1 becomes 3 (the last button) */
-        hoveredButton = ((hoveredButton - (InputService::getInstance().isKeyPressed(KEY_DOWN) ? -1 : 1)) + 4) % 4;
+        hoveredButton = ((hoveredButton - (InputService::getInstance().isKeyPressed(KEY_S) ? -1 : 1)) + 4) % 4;
         buttons[hoveredButton].setColor(RED);
     }
 }

@@ -4,6 +4,7 @@
 #include "screens/MainScreen.h"
 #include "screens/TutorialScreen.h"
 #include "screens/GameScreen.h"
+#include "screens/GameOverScreen.h"
 #include <optional>
 #include "services/AudioService.h"
 #include "services/InputService.h"
@@ -24,6 +25,9 @@ void StateService::setScreen(EScreen state)
     case EScreen::GAME:
         currentScreen = std::make_unique<GameScreen>();
         break;
+    // case EScreen::GAMEOVER:
+    //     currentScreen = std::make_unique<GameOverScreen>();
+    //     break;
     case EScreen::CLOSE:
         gameRunning = false;
         break;

@@ -9,6 +9,7 @@
 
 class Text {
     public:
+        Text(){}
         Text(std::string text, EFont font, int fontSize = 30, int spacing = 0, Color color = WHITE, Vector2 position = {100,100});
         ~Text(){}
 

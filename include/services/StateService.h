@@ -32,7 +32,6 @@ public:
      * Start the game loop
      */
     void startGame();
-
     static void staticStep()
     {
         if (IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
@@ -45,16 +44,13 @@ public:
 
 private:
     std::unique_ptr<Screen> currentScreen;
-
     bool gameRunning = true;
-
     Vector2 screenSize;
 
     /**
      * One step of the gameloop
      */
     void step();
-
     void handleMusic();
 };
 

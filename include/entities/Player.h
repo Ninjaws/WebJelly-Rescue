@@ -6,6 +6,7 @@
 #include "services/AssetService.h"
 #include "services/MapService.h"
 #include "services/InputService.h"
+#include "services/GameService.h"
 #include "entities/TextureWrapper.h"
 #include "enums/ECorner.h"
 
@@ -24,9 +25,10 @@ public:
 
 	void logic()
 	{
-		gravity();
+		applyGravity();
 		movement();
 		handleCollision();
+		outofboundsCheck();
 	}
 
 	void draw()
@@ -43,6 +45,9 @@ protected:
 private:
 	TextureWrapper texture;
 	Vector2 velocity = {0, 0};
+	float jumpPower = 7.2f;
+	float moveSpeed = 5.0f;
+	float gravity = 0.6f;
 
 	std::vector<unsigned int> timesCollision; // Holds the amount of times the player has collided with a tile, and which corner of the player is touching a tile
 	bool groundCollision;					  // Keeps track of whether or not the player has collided with the ground
@@ -52,11 +57,11 @@ private:
 	 * Is used for precise collision detection
 	 */
 
-	void gravity()
+	void applyGravity()
 	{
 		if (!groundCollision)
 		{
-			velocity.y += 0.6f;
+			velocity.y += gravity;
 		}
 		else
 		{
@@ -69,16 +74,16 @@ private:
 		velocity.x = 0.0f;
 		if (InputService::getInstance().isKeyDown(KEY_A))
 		{
-			velocity.x -= 5.0f;
+			velocity.x -= moveSpeed;
 		}
 		else if (InputService::getInstance().isKeyDown(KEY_D))
 		{
-			velocity.x += 5.0f;
+			velocity.x += moveSpeed;
 		}
 
-		if (InputService::getInstance().isKeyPressed(KEY_SPACE) && groundCollision)
+		if (InputService::getInstance().isKeyPressed(KEY_W) && groundCollision)
 		{
-			velocity.y -= 7.2f;
+			velocity.y -= jumpPower;
 		}
 	}
 
@@ -116,6 +121,14 @@ private:
 		{
 			velocity.x = 0.0f;
 			this->texture.setPosition({floorf(this->texture.getPosition().x / MapService::getInstance().getMap().getTileSize()) * MapService::getInstance().getMap().getTileSize(), this->texture.getPosition().y});
+		}
+	}
+
+	void outofboundsCheck() {
+		if(this->texture.getPosition().y > StateService::getInstance().getScreenSize().y) {
+			GameService::getInstance().setGameOver(true);
+			AudioService::getInstance().setMusic(EMusic::GAME_OVER);
+			AudioService::getInstance().playMusic();
 		}
 	}
 };

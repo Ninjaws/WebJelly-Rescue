@@ -17,7 +17,7 @@ void AssetService::setAssets()
 
     music[EMusic::MAIN] = loadMusic("Audio/Music/Crash_WarpRoomTheme.ogg", true);
     music[EMusic::GAME] = loadMusic("Audio/Music/GameTheme_2.ogg", true);
-    music[EMusic::GAME_OVER] = loadMusic("Audio/Music/gameOverTheme.ogg", false);
+    music[EMusic::GAME_OVER] = loadMusic("Audio/Music/gameOverTheme_2.ogg", false);
     /** Todo: set volume */
 
     backgrounds[EBackground::TUTORIAL] = loadTexture("Textures/TutorialBackground2.png");
