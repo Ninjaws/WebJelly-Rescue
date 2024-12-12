@@ -35,7 +35,7 @@ MainScreen::MainScreen()
         AudioService::getInstance().playMusic();
     }
 
-    InputService::getInstance().setKeysToWatch({KEY_ENTER, KEY_W, KEY_S}, {MOUSE_BUTTON_LEFT});
+    InputService::getInstance().setKeysToWatch({KEY_ENTER, KEY_W, KEY_S}, {});
 }
 
 void MainScreen::logic()
@@ -44,7 +44,7 @@ void MainScreen::logic()
     // std::cout << mouseD.y <<std::endl;
     // if (mouseD.x != 0.0f && mouseD.y != 0.0f)
     // {
-    mouseLogic();
+    // mouseLogic();
     // }
 
     keyboardLogic();
@@ -92,7 +92,7 @@ void MainScreen::keyboardLogic()
 
 void MainScreen::clickLogic()
 {
-    if (InputService::getInstance().isKeyPressed(KEY_ENTER) || InputService::getInstance().isMouseButtonPressed(MOUSE_BUTTON_LEFT))
+    if (InputService::getInstance().isKeyPressed(KEY_ENTER))
     {
         std::string selectedButton = buttons[hoveredButton].getText();
 

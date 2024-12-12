@@ -45,6 +45,9 @@ public:
         this->player = Player();
         this->player.getTexture().setPosition({200, 350});
 
+
+        this->crosshair = TextureWrapper(AssetService::getInstance().getSprite(ESprite::CROSSHAIR), {15,15}, {0,0}, {0,0,15,15});
+
         initPauseScreen();
         initGameOverScreen();
 
@@ -82,7 +85,7 @@ public:
 
     void initGameOverScreen()
     {
-        this->gameOverText = Text("game over", EFont::OXIN, 60, 0, WHITE);
+        this->gameOverText = Text("Game Over", EFont::SANSATION, 60, 0, WHITE);
         this->gameOverText.setPosition({(float)(GetScreenWidth() - gameOverText.getDimensions().x) / 2.0f, (float)(GetScreenHeight() - gameOverText.getDimensions().y) / 3.0f});
 
         const int TOP_POS = GetScreenHeight() / 1.8;
@@ -92,11 +95,11 @@ public:
         const int SPACE_PER_ITEM = TOTAL_SPACE / AMNT_OF_BUTTONS;
         for (int i = 0; i < AMNT_OF_BUTTONS; i++)
         {
-            Text txt = Text("play again", EFont::OXIN, 30, 0, WHITE);
+            Text txt = Text("Play Again", EFont::SANSATION, 30, 0, GRAY);
             gameOverScreenButtons.push_back(txt);
         }
-        gameOverScreenButtons[0].setColor(BLACK);
-        gameOverScreenButtons[1].setText("quit to main menu");
+        gameOverScreenButtons[0].setColor(WHITE);
+        gameOverScreenButtons[1].setText("Quit to Main Menu");
         for (int i = 0; i < AMNT_OF_BUTTONS; i++)
         {
             gameOverScreenButtons[i].setPosition({(float)X_GAP + SPACE_PER_ITEM * i, (float)TOP_POS});
@@ -105,6 +108,8 @@ public:
 
     void logic()
     {
+        this->crosshair.setPosition(GetMousePosition());
+
         if (GameService::getInstance().isPaused())
         {
             pausedLogic();
@@ -164,25 +169,25 @@ public:
     {
         if (InputService::getInstance().isKeyPressed(KEY_D) || InputService::getInstance().isKeyPressed(KEY_A))
         {
-            gameOverScreenButtons[hoveredGameOverScreenButton].setColor(WHITE);
+            gameOverScreenButtons[hoveredGameOverScreenButton].setColor(GRAY);
             /** Move up or down depending on the pressed button. +4 is used so that -1 becomes 3 (the last button) */
             hoveredGameOverScreenButton = ((hoveredGameOverScreenButton - (InputService::getInstance().isKeyPressed(KEY_D) ? -1 : 1)) + gameOverScreenButtons.size()) % gameOverScreenButtons.size();
-            gameOverScreenButtons[hoveredGameOverScreenButton].setColor(BLACK);
+            gameOverScreenButtons[hoveredGameOverScreenButton].setColor(WHITE);
         }
 
         if (InputService::getInstance().isKeyPressed(KEY_ENTER))
         {
-            GameService::getInstance().setGameOver(false);
             std::string selectedButton = gameOverScreenButtons[hoveredGameOverScreenButton].getText();
 
-            if (selectedButton == "play again")
+            if (selectedButton == "Play Again")
             {
                 StateService::getInstance().setScreen(EScreen::GAME);
             }
-            else if (selectedButton == "quit to main menu")
+            else if (selectedButton == "Quit to Main Menu")
             {
                 StateService::getInstance().setScreen(EScreen::MAIN);
             }
+            GameService::getInstance().setGameOver(false);
         }
     }
 
@@ -205,6 +210,7 @@ public:
         {
             drawGameOver();
         }
+        drawCrosshair();
         EndDrawing();
     }
 
@@ -233,11 +239,22 @@ public:
         }
     }
 
+    void drawCrosshair() {
+        DrawTextureEx(this->crosshair.getTexture(),GetMousePosition(),0,1.2f,RED);
+        // DrawTexturePro(
+        //     this->crosshair.getTexture(),
+        //     this->crosshair.getSourceRect(), 
+        //     {GetMousePosition().x, GetMousePosition().y, GetMousePosition().x+this->crosshair.getSize().x, GetMousePosition().y+this->crosshair.getSize().y}, 
+        //     {this->crosshair.getSize().x/2.0f, this->crosshair.getSize().y/2.0f},
+        //     0, 
+        //     WHITE);
+    }
 private:
     Camera2D camera;
     Background background;
     Map map;
     Player player;
+    TextureWrapper crosshair;
 
     std::vector<Text> pauseScreenButtons;
     int hoveredPauseScreenButton = 0;

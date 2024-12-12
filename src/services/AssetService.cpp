@@ -43,6 +43,7 @@ void AssetService::setAssets()
     sprites[ESprite::HUD_HEART] = loadTexture("Textures/heart.png");
     sprites[ESprite::HUD_HEART_EMPTY] = loadTexture("Textures/heart_empty.png");
     sprites[ESprite::HUD_AMMO] = loadTexture("Textures/bullet_hud.png");
+    sprites[ESprite::CROSSHAIR] = loadTexture("Textures/crosshair_3.png");
 }
 
 Font AssetService::getFont(EFont font, int fontSize)

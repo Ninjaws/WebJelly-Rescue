@@ -13,12 +13,12 @@ TutorialScreen::TutorialScreen() {
 
     this->background = Background(EBackground::TUTORIAL);
 
-    InputService::getInstance().setKeysToWatch({KEY_ENTER}, {MOUSE_BUTTON_LEFT});
+    InputService::getInstance().setKeysToWatch({KEY_ENTER},{});
 }
 
 void TutorialScreen::logic()
 {
-    if ( InputService::getInstance().isKeyPressed(KEY_ENTER) || InputService::getInstance().isMouseButtonPressed(MOUSE_BUTTON_LEFT))
+    if ( InputService::getInstance().isKeyPressed(KEY_ENTER))
     {
         StateService::getInstance().setScreen(EScreen::MAIN);
     }

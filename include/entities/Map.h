@@ -24,6 +24,10 @@ public:
         return this->tileSize;
     }
 
+    std::vector<std::vector<int>> getColMap() {
+        return this->colMap;
+    }
+
 private:
     /** Holds the number for every single tile, which refers to a certain sprite in the tileset */
     std::vector<std::vector<Vector2>> map;

@@ -45,10 +45,11 @@ void StateService::startGame()
 {
     // if(!instance)
     //     return;
-    InitAudioDevice();
+    // InitAudioDevice();
     // InitWindow(640,544, "Jelly Rescue");
     InitWindow(screenSize.x, screenSize.y, "Jelly Rescue");
-    SetTargetFPS(60);
+    SetTargetFPS(45);
+    HideCursor();
 
     // #if defined(PLATFORM_WEB)
     //  emscripten_set_keypress_callback(EMSCRIPTEN_EVENT_TARGET_CANVAS, nullptr, 1, staticStep);
@@ -74,7 +75,7 @@ void StateService::startGame()
 #endif
 
     CloseWindow();
-    CloseAudioDevice();
+    // CloseAudioDevice();
 }
 
 void StateService::handleMusic()

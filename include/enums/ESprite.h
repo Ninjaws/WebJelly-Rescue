@@ -15,7 +15,8 @@ enum class ESprite {
     POWERUP,
     HUD_HEART,
     HUD_HEART_EMPTY,
-    HUD_AMMO
+    HUD_AMMO,
+    CROSSHAIR
 };
 
 #endif
