@@ -114,18 +114,18 @@ void Map::loadTileset()
     this->tileset = AssetService::getInstance().loadTexture("Textures/tileset.png");
 }
 
-std::unordered_map<ECorner, Vector2> Map::cornersToTilePos(std::unordered_map<ECorner, Vector2> corners)
-{
-    // std::cout << "Starting converting" << std::endl;
-    std::unordered_map<ECorner, Vector2> cornersTilePos;
-    for (const auto &pair : corners)
-    {
-        // std::cout << "Foreach pair" << std::endl;
-        Vector2 original = corners[pair.first];
-        cornersTilePos[pair.first] = {floorf(original.x / this->tileSize), floorf(original.y / this->tileSize)};
-    }
-    return cornersTilePos;
-}
+// std::unordered_map<ECorner, Vector2> Map::cornersToTilePos(std::unordered_map<ECorner, Vector2> corners)
+// {
+//     // std::cout << "Starting converting" << std::endl;
+//     std::unordered_map<ECorner, Vector2> cornersTilePos;
+//     for (const auto &pair : corners)
+//     {
+//         // std::cout << "Foreach pair" << std::endl;
+//         Vector2 original = corners[pair.first];
+//         cornersTilePos[pair.first] = {floorf(original.x / this->tileSize), floorf(original.y / this->tileSize)};
+//     }
+//     return cornersTilePos;
+// }
 
 void Map::draw()
 {
@@ -146,35 +146,35 @@ void Map::draw()
     }
 }
 
-std::unordered_map<ECorner, bool> Map::checkForCollision(TextureWrapper texture)
-{
-    // std::cout << "Converting.." << std::endl;
-    std::unordered_map<ECorner, Vector2> cornersTilePos = cornersToTilePos(texture.getCorners());
-    // std::cout << "Done with converting" << std::endl;
+// std::unordered_map<ECorner, bool> Map::checkForCollision(TextureWrapper texture)
+// {
+//     // std::cout << "Converting.." << std::endl;
+//     std::unordered_map<ECorner, Vector2> cornersTilePos = cornersToTilePos(texture.getCorners());
+//     // std::cout << "Done with converting" << std::endl;
 
-    std::unordered_map<ECorner, bool> cornerCollisions;
+//     std::unordered_map<ECorner, bool> cornerCollisions;
 
-     for (const auto &pair : cornersTilePos)
-    {
-        // std::cout << "foreach collision check" << std::endl;
-        Vector2 pos = cornersTilePos[pair.first];
-        // std::cout << pos.x << " " << pos.y << std::endl;
-        if(colMap[pos.y][pos.x] == 1) {
-            cornerCollisions[pair.first] = true;
-        } else {
-            cornerCollisions[pair.first] = false;
-        }    
-    }
-    // std::cout << "Finished collision checks" << std::endl;
+//      for (const auto &pair : cornersTilePos)
+//     {
+//         // std::cout << "foreach collision check" << std::endl;
+//         Vector2 pos = cornersTilePos[pair.first];
+//         // std::cout << pos.x << " " << pos.y << std::endl;
+//         if(colMap[pos.y][pos.x] == 1) {
+//             cornerCollisions[pair.first] = true;
+//         } else {
+//             cornerCollisions[pair.first] = false;
+//         }    
+//     }
+//     // std::cout << "Finished collision checks" << std::endl;
 
-    return cornerCollisions;
+//     return cornerCollisions;
 
-    // for (int i = 0; i < tiles.size(); i++)
-	// {
-	// 	if (colMap[tiles[i].y][tiles[i].x] == 1)
-	// 	{
-	// 		timesCollision.push_back(i);
-	// 	}
-	// }
+//     // for (int i = 0; i < tiles.size(); i++)
+// 	// {
+// 	// 	if (colMap[tiles[i].y][tiles[i].x] == 1)
+// 	// 	{
+// 	// 		timesCollision.push_back(i);
+// 	// 	}
+// 	// }
 
-}
+// }

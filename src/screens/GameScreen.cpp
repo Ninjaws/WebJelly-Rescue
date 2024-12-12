@@ -1,6 +1,7 @@
 #include "screens/GameScreen.h"
 #include "entities/Map.h"
 #include "services/StateService.h"
+#include "services/GameService.h"
 
 GameScreen::GameScreen()
 {
@@ -12,6 +13,7 @@ GameScreen::GameScreen()
     // this->map = Map();
     
     this->game = Game();
+    // GameService::getInstance().setGame(this->game);
     // this->camera = camera;
 }
 

@@ -18,7 +18,7 @@ public:
     void draw();
 
     /** Checks and returns which corners of the object have been collided with */
-    std::unordered_map<ECorner, bool> checkForCollision(TextureWrapper texture);
+    // std::unordered_map<ECorner, bool> checkForCollision(TextureWrapper texture);
 
     int getTileSize() {
         return this->tileSize;
@@ -45,7 +45,7 @@ private:
     /**
      * Converts the corners of the object to the matching tiles, so that they can be checked for collision
      */
-    std::unordered_map<ECorner, Vector2> cornersToTilePos(std::unordered_map<ECorner, Vector2> corners);
+    // std::unordered_map<ECorner, Vector2> cornersToTilePos(std::unordered_map<ECorner, Vector2> corners);
 };
 
 #endif

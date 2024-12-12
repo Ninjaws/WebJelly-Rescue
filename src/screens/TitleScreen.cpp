@@ -29,13 +29,13 @@ TitleScreen::TitleScreen()
         AudioService::getInstance().playMusic();
     }
 
-    InputService::getInstance().setKeysToWatch({KEY_ENTER}, {});
+    InputService::getInstance().setKeysToWatch({KEY_ENTER}, {MOUSE_BUTTON_LEFT});
 }
 
 void TitleScreen::logic()
 {
         // std::cout << "Next screen!" << std::endl;
-    if (InputService::getInstance().isKeyPressed(KEY_ENTER))
+    if (InputService::getInstance().isKeyPressed(KEY_ENTER) || InputService::getInstance().isMouseButtonPressed(MOUSE_BUTTON_LEFT))
     {
         StateService::getInstance().setScreen(EScreen::MAIN);
     }

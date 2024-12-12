@@ -40,13 +40,13 @@ public:
         camera.target = (Vector2){screenSize.x / 2.0f, screenSize.y / 2.0f}; // Initially at the center of the world
         camera.rotation = 0.0f;
         camera.zoom = 1.0f;
-        this->camera = camera;
+        // this->camera = camera;
+        GameService::getInstance().setCamera(camera);
 
         this->player = Player();
-        this->player.getTexture().setPosition({200, 350});
+        this->player.setPosition({200, 350});
 
-
-        this->crosshair = TextureWrapper(AssetService::getInstance().getSprite(ESprite::CROSSHAIR), {15,15}, {0,0}, {0,0,15,15});
+        this->crosshair = TextureWrapper(AssetService::getInstance().getSprite(ESprite::CROSSHAIR), {15, 15}, {0, 0}, {0, 0, 15, 15});
 
         initPauseScreen();
         initGameOverScreen();
@@ -55,9 +55,88 @@ public:
         AudioService::getInstance().setMusic(EMusic::GAME);
         AudioService::getInstance().playMusic();
     }
+
     ~Game()
     {
     }
+
+    void logic()
+    {
+        this->crosshair.setPosition(GetMousePosition());
+
+        if (GameService::getInstance().isPaused())
+        {
+            pausedLogic();
+            return;
+        }
+        else if (GameService::getInstance().isGameOver())
+        {
+            gameOverLogic();
+            return;
+        }
+
+        if (InputService::getInstance().isKeyPressed(KEY_ENTER))
+        {
+            GameService::getInstance().setPaused(true);
+            AudioService::getInstance().pauseMusic();
+            return;
+        }
+        // this->camera.offset.x -= 1.5;
+        this->player.logic();
+        if (this->player.getTexture().getPosition().x > (StateService::getInstance().getScreenSize().x / 2.0f))
+        {
+            GameService::getInstance().getCamera().offset = {(StateService::getInstance().getScreenSize().x / 2.0f) + ((StateService::getInstance().getScreenSize().x / 2.0f) - this->player.getTexture().getPosition().x), StateService::getInstance().getScreenSize().y / 2.0f};
+        }
+    }
+
+    void draw()
+    {
+        BeginDrawing();
+        BeginMode2D(GameService::getInstance().getCamera());
+
+        this->background.draw();
+        this->map.draw();
+        this->player.draw();
+
+        EndMode2D();
+
+        if (GameService::getInstance().isPaused())
+        {
+            drawPaused();
+        }
+        else if (GameService::getInstance().isGameOver())
+        {
+            drawGameOver();
+        }
+        drawCrosshair();
+        EndDrawing();
+    }
+
+private:
+    // Camera2D camera;
+    Background background;
+    Map map;
+    Player player;
+    TextureWrapper crosshair;
+
+    std::vector<Text> pauseScreenButtons;
+    int hoveredPauseScreenButton = 0;
+
+    Text gameOverText;
+    std::vector<Text> gameOverScreenButtons;
+    int hoveredGameOverScreenButton = 0;
+
+    // bool isPaused = false;
+    // bool isGameOver = false;
+
+    // std::vector<Enemy> enemies
+    // std::vector<Create> crates
+    // std::vector<PBullet> playerBullets
+    // std::vector<EBullet> enemyBullets
+    // std::vector<Jelly> jellies
+    // std::vector<Ammo> ammo
+    // std::vector<Healthpack> healthpacks
+    // Powerup powerup
 
     void initPauseScreen()
     {
@@ -103,35 +182,6 @@ public:
         for (int i = 0; i < AMNT_OF_BUTTONS; i++)
         {
             gameOverScreenButtons[i].setPosition({(float)X_GAP + SPACE_PER_ITEM * i, (float)TOP_POS});
-        }
-    }
-
-    void logic()
-    {
-        this->crosshair.setPosition(GetMousePosition());
-
-        if (GameService::getInstance().isPaused())
-        {
-            pausedLogic();
-            return;
-        }
-        else if (GameService::getInstance().isGameOver())
-        {
-            gameOverLogic();
-            return;
-        }
-
-        if (InputService::getInstance().isKeyPressed(KEY_ENTER))
-        {
-            GameService::getInstance().setPaused(true);
-            AudioService::getInstance().pauseMusic();
-            return;
-        }
-        // this->camera.offset.x -= 1.5;
-        this->player.logic();
-        if (this->player.getTexture().getPosition().x > (StateService::getInstance().getScreenSize().x / 2.0f))
-        {
-            this->camera.offset = {(StateService::getInstance().getScreenSize().x / 2.0f) + ((StateService::getInstance().getScreenSize().x / 2.0f) - this->player.getTexture().getPosition().x), StateService::getInstance().getScreenSize().y / 2.0f};
         }
     }
 
@@ -191,29 +241,6 @@ public:
         }
     }
 
-    void draw()
-    {
-        BeginDrawing();
-        BeginMode2D(this->camera);
-
-        this->background.draw();
-        this->map.draw();
-        this->player.draw();
-
-        EndMode2D();
-
-        if (GameService::getInstance().isPaused())
-        {
-            drawPaused();
-        }
-        else if (GameService::getInstance().isGameOver())
-        {
-            drawGameOver();
-        }
-        drawCrosshair();
-        EndDrawing();
-    }
-
     void drawPaused()
     {
         // 100, 100, 255, 60
@@ -239,41 +266,17 @@ public:
         }
     }
 
-    void drawCrosshair() {
-        DrawTextureEx(this->crosshair.getTexture(),GetMousePosition(),0,1.2f,RED);
+    void drawCrosshair()
+    {
+        DrawTextureEx(this->crosshair.getTexture(), GetMousePosition(), 0, 1.2f, RED);
         // DrawTexturePro(
         //     this->crosshair.getTexture(),
-        //     this->crosshair.getSourceRect(), 
-        //     {GetMousePosition().x, GetMousePosition().y, GetMousePosition().x+this->crosshair.getSize().x, GetMousePosition().y+this->crosshair.getSize().y}, 
+        //     this->crosshair.getSourceRect(),
+        //     {GetMousePosition().x, GetMousePosition().y, GetMousePosition().x+this->crosshair.getSize().x, GetMousePosition().y+this->crosshair.getSize().y},
         //     {this->crosshair.getSize().x/2.0f, this->crosshair.getSize().y/2.0f},
-        //     0, 
+        //     0,
         //     WHITE);
     }
-private:
-    Camera2D camera;
-    Background background;
-    Map map;
-    Player player;
-    TextureWrapper crosshair;
-
-    std::vector<Text> pauseScreenButtons;
-    int hoveredPauseScreenButton = 0;
-
-    Text gameOverText;
-    std::vector<Text> gameOverScreenButtons;
-    int hoveredGameOverScreenButton = 0;
-
-    // bool isPaused = false;
-    // bool isGameOver = false;
-
-    // std::vector<Enemy> enemies
-    // std::vector<Create> crates
-    // std::vector<PBullet> playerBullets
-    // std::vector<EBullet> enemyBullets
-    // std::vector<Jelly> jellies
-    // std::vector<Ammo> ammo
-    // std::vector<Healthpack> healthpacks
-    // Powerup powerup
 };
 
 #endif
