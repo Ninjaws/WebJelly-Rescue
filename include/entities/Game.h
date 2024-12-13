@@ -10,14 +10,15 @@
 #include "services/GameService.h"
 #include "entities/Player.h"
 #include "entities/Text.h"
+#include "entities/Bullet.h"
+#include "entities/PBullet.h"
 
 class Game
 {
 public:
     Game()
     {
-        GameService::getInstance().setGameOver(false);
-        GameService::getInstance().setPaused(false);
+        GameService::getInstance().resetGame();
 
         TextureWrapper wrapper1 = TextureWrapper(AssetService::getInstance().getBackground(EBackground::GAME1), {GetScreenWidth() * 2.0f, (float)GetScreenHeight()}, {0, 0});
         wrapper1.setSourceRect({0, 0, wrapper1.getSize().x, wrapper1.getSize().y});
@@ -42,10 +43,8 @@ public:
         camera.zoom = 1.0f;
         // this->camera = camera;
         GameService::getInstance().setCamera(camera);
-
         this->player = Player();
         this->player.setPosition({200, 350});
-
         this->crosshair = TextureWrapper(AssetService::getInstance().getSprite(ESprite::CROSSHAIR), {15, 15}, {0, 0}, {0, 0, 15, 15});
 
         initPauseScreen();
@@ -81,7 +80,9 @@ public:
             AudioService::getInstance().pauseMusic();
             return;
         }
-        // this->camera.offset.x -= 1.5;
+ 
+        GameService::getInstance().bulletLogic();
+
         this->player.logic();
         if (this->player.getTexture().getPosition().x > (StateService::getInstance().getScreenSize().x / 2.0f))
         {
@@ -95,6 +96,13 @@ public:
         BeginMode2D(GameService::getInstance().getCamera());
 
         this->background.draw();
+
+        // std::vector<PBullet> pbs = GameService::getInstance().getPlayerBullets();
+        // for (int i = 0; i < GameService::getInstance().getPlayerBullets().size(); i++)
+        // {
+        //     GameService::getInstance().getPlayerBullets()[i].draw();
+        // }
+        GameService::getInstance().drawBullets();
         this->map.draw();
         this->player.draw();
 
@@ -126,12 +134,13 @@ private:
     std::vector<Text> gameOverScreenButtons;
     int hoveredGameOverScreenButton = 0;
 
+    // std::vector<PBullet> playerBullets;
+
     // bool isPaused = false;
     // bool isGameOver = false;
 
     // std::vector<Enemy> enemies
     // std::vector<Create> crates
-    // std::vector<PBullet> playerBullets
     // std::vector<EBullet> enemyBullets
     // std::vector<Jelly> jellies
     // std::vector<Ammo> ammo
@@ -239,6 +248,10 @@ private:
             }
             GameService::getInstance().setGameOver(false);
         }
+    }
+
+    void shootLogic()
+    {
     }
 
     void drawPaused()

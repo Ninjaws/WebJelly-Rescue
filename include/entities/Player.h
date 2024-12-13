@@ -10,6 +10,7 @@
 #include "entities/TextureWrapper.h"
 #include "enums/ECorner.h"
 #include "entities/Vector2i.h"
+#include "entities/PBullet.h"
 
 class Player
 {
@@ -22,6 +23,8 @@ public:
 		spriteAnimation = {0, 0};
 		this->gunRight = TextureWrapper(AssetService::getInstance().getSprite(ESprite::PLAYER_GUN_RIGHT), {58, 29}, {0, 0});
 		this->gunLeft = TextureWrapper(AssetService::getInstance().getSprite(ESprite::PLAYER_GUN_LEFT), {58, 29}, {0, 0});
+		this->ammo = max_ammo;
+		this->prevShot = GetTime();
 	}
 	~Player()
 	{
@@ -30,6 +33,7 @@ public:
 	void logic()
 	{
 		rotateGun();
+		shoot();
 		movement();
 		outofboundsCheck();
 	}
@@ -59,9 +63,9 @@ private:
 	float jumpPower = 7.2f;
 	float moveSpeed = 5.0f;
 	float gravity = 0.6f;
-	float animationDelay = 0.2f; 			// In seconds
+	float animationDelay = 0.2f; // In seconds
 	double prevFrame;
-	Vector2 spriteAnimation; 				// Keeps track of (1) Sprite cycling and (2) Player direction
+	Vector2 spriteAnimation; // Keeps track of (1) Sprite cycling and (2) Player direction
 	enum Direction
 	{
 		Down,
@@ -70,10 +74,15 @@ private:
 		Up
 	}; // Used in conjuction with spriteAnimation, makes sure sprite direction matches with player direction
 
-	std::vector<Vector2i> tiles; 			  // Holds eight points of the player for accurate collision
+	std::vector<Vector2i> tiles;			  // Holds eight points of the player for accurate collision
 	std::vector<unsigned int> timesCollision; // Holds the amount of times the player has collided with a tile, and which corner of the player is touching a tile
 	bool groundCollision;					  // Keeps track of whether or not the player has collided with the ground
 	bool crateTopCollision;					  // Whether the player is standing on top of a crate
+
+	int ammo;
+	int max_ammo = 100;
+	float firingRate= 0.2f; // Delay in seconds
+	double prevShot;						  // The last time the player fired a bullet
 
 	void applyGravity()
 	{
@@ -318,6 +327,46 @@ private:
 				{this->gunLeft.getSize().x / 2.0f, this->gunLeft.getSize().y / 2.0f},
 				this->gunLeft.getRotation(),
 				WHITE);
+		}
+	}
+
+	void shoot()
+	{
+		if (InputService::getInstance().isMouseButtonDown(MOUSE_BUTTON_LEFT) && GetTime() - prevShot > firingRate && groundCollision)
+		{
+			prevShot = GetTime();
+			if (ammo == 0) {
+				// Play empty gun sound
+				return;
+			}
+			// Play shooting sound
+			ammo--;
+			Vector2 bulletStartLocation = {this->texture.getPosition().x + 10, this->texture.getPosition().y + 10};
+
+			Vector2 mouseWorldPos = GameService::getInstance().getMouseWorldPos();
+
+			if (spriteAnimation.y == Left)
+			{
+				bulletStartLocation.y = this->texture.getPosition().y + 10;
+				bulletStartLocation.x = this->texture.getPosition().x - 5;
+			}
+			if (spriteAnimation.y == Right)
+			{
+				bulletStartLocation.y = this->texture.getPosition().y + 10;
+				bulletStartLocation.x = this->texture.getPosition().x + 37;
+			}
+
+			if (mouseWorldPos.x > this->texture.getPosition().x + (this->gunLeft.getSize().x) && spriteAnimation.y == Right ||
+				mouseWorldPos.x + (this->gunLeft.getSize().x / 2) < this->texture.getPosition().x && spriteAnimation.y == Left)
+			{
+				// PlayGunSound();
+				// currentAmmo--;
+				// .push_back(bulletStartLocation);
+				float angleShot = atan2(mouseWorldPos.y - bulletStartLocation.y,
+										mouseWorldPos.x - bulletStartLocation.x);
+				GameService::getInstance().addPlayerBullet(PBullet(bulletStartLocation, angleShot));
+				// bulletDirections.push_back(angleShot);
+			}
 		}
 	}
 };
