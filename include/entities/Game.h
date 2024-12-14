@@ -8,6 +8,7 @@
 #include "services/MapService.h"
 #include "services/InputService.h"
 #include "services/GameService.h"
+#include "services/CollectableService.h"
 #include "entities/Player.h"
 #include "entities/Text.h"
 #include "entities/Bullet.h"
@@ -47,6 +48,8 @@ public:
         this->player.setPosition({200, 350});
         this->crosshair = TextureWrapper(AssetService::getInstance().getSprite(ESprite::CROSSHAIR), {15, 15}, {0, 0}, {0, 0, 15, 15});
 
+        CollectableService::getInstance().initCollectables();
+
         initPauseScreen();
         initGameOverScreen();
 
@@ -80,8 +83,9 @@ public:
             AudioService::getInstance().pauseMusic();
             return;
         }
- 
+
         GameService::getInstance().bulletLogic();
+        CollectableService::getInstance().collectableLogic();
 
         this->player.logic();
         if (this->player.getTexture().getPosition().x > (StateService::getInstance().getScreenSize().x / 2.0f))
@@ -104,6 +108,7 @@ public:
         // }
         GameService::getInstance().drawBullets();
         this->map.draw();
+        CollectableService::getInstance().drawCollectables();
         this->player.draw();
 
         EndMode2D();
@@ -116,6 +121,7 @@ public:
         {
             drawGameOver();
         }
+        drawHud();
         drawCrosshair();
         EndDrawing();
     }
@@ -250,10 +256,6 @@ private:
         }
     }
 
-    void shootLogic()
-    {
-    }
-
     void drawPaused()
     {
         // 100, 100, 255, 60
@@ -289,6 +291,65 @@ private:
         //     {this->crosshair.getSize().x/2.0f, this->crosshair.getSize().y/2.0f},
         //     0,
         //     WHITE);
+    }
+
+    void drawHud()
+    {
+        drawHudHealth();
+        drawHudBullets();
+    }
+
+    void drawHudBullets()
+    {
+        Vector2i pixel_pos = Vector2i(5, 40);
+        Texture2D ammoSprite = AssetService::getInstance().getSprite(ESprite::HUD_AMMO);
+        Vector2i display_pos;
+        for (int i = 0; i < this->player.getAmmo(); i++)
+        {
+            if (i <= 49)
+            {
+                display_pos = Vector2i(pixel_pos.x + ammoSprite.width * i, pixel_pos.y);
+            }
+            if (i > 49 && i <= 99)
+            {
+                display_pos = Vector2i(pixel_pos.x + ammoSprite.width * (i - (50)), pixel_pos.y + ammoSprite.height);
+            }
+            else if (i > 99 && i <= 149)
+            {
+                display_pos = Vector2i(pixel_pos.x + ammoSprite.width * (i - (100)), pixel_pos.y + ammoSprite.height * 2);
+            }
+            else if (i > 149 && i <= 199)
+            {
+                display_pos = Vector2i(pixel_pos.x + ammoSprite.width * (i - (150)), pixel_pos.y + ammoSprite.height * 3);
+            }
+            else if (i > 199 && i <= 249)
+            {
+                display_pos = Vector2i(pixel_pos.x + ammoSprite.width * (i - (200)), pixel_pos.y + ammoSprite.height * 4);
+            }
+            DrawTexture(ammoSprite, display_pos.x, display_pos.y, WHITE);
+        }
+    }
+
+    void drawHudHealth()
+    {
+        Vector2i pixel_pos = Vector2i(5, 5);
+        Texture2D noHealthSprite = AssetService::getInstance().getSprite(ESprite::HUD_HEART_EMPTY);
+        Texture2D healthSprite = AssetService::getInstance().getSprite(ESprite::HUD_HEART);
+        // sVector2f coord_pos = GetWindow().mapPixelToCoords(pixel_pos);
+        for (int i = 0; i < this->player.getMaxHealth(); i++)
+        {
+            Vector2i pos = Vector2i(pixel_pos.x + noHealthSprite.width * i, pixel_pos.y);
+            // noHealthSprite[i].setPosition(coord_pos.x + noHealthTexture.getSize().x * i, coord_pos.y);
+            DrawTexture(noHealthSprite, pos.x, pos.y, WHITE);
+        }
+        for (int i = 0; i < this->player.getHealth(); i++)
+        {
+            // healthSprite[i].setPosition(coord_pos.x + healthTexture.getSize().x * i, coord_pos.y);
+            // DrawTexture(ammoSprite, display_pos.x, display_pos.y, WHITE);
+            Vector2i pos = Vector2i(pixel_pos.x + healthSprite.width * i, pixel_pos.y);
+            // noHealthSprite[i].setPosition(coord_pos.x + noHealthTexture.getSize().x * i, coord_pos.y);
+            DrawTexture(healthSprite, pos.x, pos.y, WHITE);
+        }
     }
 };
 

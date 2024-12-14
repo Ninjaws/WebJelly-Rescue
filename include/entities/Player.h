@@ -9,6 +9,7 @@
 #include "services/GameService.h"
 #include "entities/TextureWrapper.h"
 #include "enums/ECorner.h"
+#include "enums/ESound.h"
 #include "entities/Vector2i.h"
 #include "entities/PBullet.h"
 
@@ -20,11 +21,12 @@ public:
 		this->texture = TextureWrapper(AssetService::getInstance().getSprite(ESprite::PLAYER), {32, 32}, {200, 200});
 
 		prevFrame = GetTime();
-		spriteAnimation = {0, 0};
+		spriteAnimation = {0, Right};
 		this->gunRight = TextureWrapper(AssetService::getInstance().getSprite(ESprite::PLAYER_GUN_RIGHT), {58, 29}, {0, 0});
 		this->gunLeft = TextureWrapper(AssetService::getInstance().getSprite(ESprite::PLAYER_GUN_LEFT), {58, 29}, {0, 0});
 		this->ammo = max_ammo;
 		this->prevShot = GetTime();
+		this->health = max_health;
 	}
 	~Player()
 	{
@@ -54,6 +56,18 @@ public:
 		this->texture.setPosition(pos);
 	}
 
+	int getAmmo() {
+		return this->ammo;
+	}
+
+	uint8_t getHealth() {
+		return this->health;
+	}
+
+	uint8_t getMaxHealth() {
+		return this->max_health;
+	}
+
 protected:
 private:
 	TextureWrapper texture;
@@ -63,9 +77,9 @@ private:
 	float jumpPower = 7.2f;
 	float moveSpeed = 5.0f;
 	float gravity = 0.6f;
-	float animationDelay = 0.2f; // In seconds
+	float animationDelay = 0.2f; 			  // In seconds
 	double prevFrame;
-	Vector2 spriteAnimation; // Keeps track of (1) Sprite cycling and (2) Player direction
+	Vector2i spriteAnimation; 				  // Keeps track of (1) Sprite cycling and (2) Player direction
 	enum Direction
 	{
 		Down,
@@ -79,10 +93,12 @@ private:
 	bool groundCollision;					  // Keeps track of whether or not the player has collided with the ground
 	bool crateTopCollision;					  // Whether the player is standing on top of a crate
 
-	int ammo;
-	int max_ammo = 100;
-	float firingRate= 0.2f; // Delay in seconds
+	uint8_t ammo;							  // Current ammo of the player
+	uint8_t max_ammo = 100;					  // Max ammo of the player
+	float firingRate= 0.2f; 				  // Delay in seconds
 	double prevShot;						  // The last time the player fired a bullet
+	uint8_t health;					  		  // Current health of the player
+	uint8_t max_health = 10;			  		  // Max health of the player
 
 	void applyGravity()
 	{
@@ -278,6 +294,7 @@ private:
 	{
 		if (this->texture.getPosition().y > StateService::getInstance().getScreenSize().y)
 		{
+			this->health = 0;
 			GameService::getInstance().setGameOver(true);
 			AudioService::getInstance().setMusic(EMusic::GAME_OVER);
 			AudioService::getInstance().playMusic();
@@ -335,14 +352,18 @@ private:
 		if (InputService::getInstance().isMouseButtonDown(MOUSE_BUTTON_LEFT) && GetTime() - prevShot > firingRate && groundCollision)
 		{
 			prevShot = GetTime();
-			if (ammo == 0) {
+			if (ammo == 0 || (GameService::getInstance().getMouseWorldPos().x > (this->texture.getPosition().x - this->gunLeft.getSize().x/2.0f) && spriteAnimation.y == Left) ||
+							 (GameService::getInstance().getMouseWorldPos().x < (this->texture.getPosition().x + this->texture.getSize().x + gunLeft.getSize().x/2.0f) && spriteAnimation.y == Right))
+				{
 				// Play empty gun sound
+				AssetService::getInstance().playSound(ESound::NO_AMMO);
 				return;
 			}
 			// Play shooting sound
+			AssetService::getInstance().playSound(ESound::SHOOT);
 			ammo--;
-			Vector2 bulletStartLocation = {this->texture.getPosition().x + 10, this->texture.getPosition().y + 10};
 
+			Vector2 bulletStartLocation = {this->texture.getPosition().x + 10, this->texture.getPosition().y + 10};
 			Vector2 mouseWorldPos = GameService::getInstance().getMouseWorldPos();
 
 			if (spriteAnimation.y == Left)
@@ -353,7 +374,7 @@ private:
 			if (spriteAnimation.y == Right)
 			{
 				bulletStartLocation.y = this->texture.getPosition().y + 10;
-				bulletStartLocation.x = this->texture.getPosition().x + 37;
+				bulletStartLocation.x = this->texture.getPosition().x + 22;
 			}
 
 			if (mouseWorldPos.x > this->texture.getPosition().x + (this->gunLeft.getSize().x) && spriteAnimation.y == Right ||

@@ -1,9 +1,10 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include <vector>
 #include "raylib.h"
 #include "entities/TextureWrapper.h"
+#include "entities/Vector2i.h"
+#include <vector>
 #include <cmath>
 
 /**
@@ -26,6 +27,10 @@ public:
 
     std::vector<std::vector<int>> getColMap() {
         return this->colMap;
+    }
+
+    void updateColmapTile(Vector2i tile, bool collision) {
+        this->colMap[tile.y][tile.x] = collision ? 1 : 0;
     }
 
 private:

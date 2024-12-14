@@ -8,7 +8,7 @@ RUN apt-get update \
     cmake \
     libasound2-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev \
     libglu1-mesa-dev libxcursor-dev libxinerama-dev libwayland-dev libxkbcommon-dev \
-    sudo \
+    sudo lldb \
     alsa-utils \
     && rm -rf /var/cache/apt/*
 

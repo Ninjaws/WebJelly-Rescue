@@ -16,7 +16,6 @@ public:
     {
         this->position = pos;
         this->direction = direction;
-        std::cout << direction << std::endl;
     }
 
     // ~Bullet() {}
@@ -25,8 +24,8 @@ public:
     {
         move();
         hasCollided = false;
-        envCollision();
         objCollision();
+        envCollision();
         //     // detectCollision();
     }
 
@@ -42,14 +41,14 @@ public:
 
 protected:
     Color color = RED;
+    Vector2 position;
+    int size = 7;
+    bool hasCollided = false;
 
 private:
     // TextureWrapper object;
-    Vector2 position;
     float direction;
     float velocity = 15.0f;
-    int size = 7;
-    bool hasCollided = false;
 
     void move()
     {
@@ -59,7 +58,7 @@ private:
     }
     void envCollision()
     {
-        if (position.y < 0 || position.y > GetScreenHeight())
+        if (position.x < 0 || position.y < 0 || position.y > GetScreenHeight())
         {
             hasCollided = true;
             return;

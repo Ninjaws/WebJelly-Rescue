@@ -20,6 +20,13 @@ void AssetService::setAssets()
     music[EMusic::GAME_OVER] = loadMusic("Audio/Music/gameOverTheme_2.ogg", false);
     /** Todo: set volume */
 
+    sounds[ESound::SHOOT] = loadSound("Audio/Sounds/gunShot.wav");
+    SetSoundVolume(sounds[ESound::SHOOT], 0.4f);
+    sounds[ESound::NO_AMMO] = loadSound("Audio/Sounds/outOfAmmo.wav");
+    sounds[ESound::CRATE_BREAK] = loadSound("Audio/Sounds/crateBreak.wav");
+    SetSoundVolume(sounds[ESound::CRATE_BREAK], 1.0f);
+    sounds[ESound::JELLY_FREED] = loadSound("Audio/Sounds/jellyFreed.wav");
+
     backgrounds[EBackground::TUTORIAL] = loadTexture("Textures/TutorialBackground2.png");
     backgrounds[EBackground::GAME1] = loadTexture("Textures/GameBackground_1.png");
     backgrounds[EBackground::GAME2] = loadTexture("Textures/GameBackground_2.jpg");

@@ -1,13 +1,13 @@
-#include "services/StateService.h"
 #include "raylib.h"
+#include "services/StateService.h"
+#include "services/AudioService.h"
+#include "services/InputService.h"
 #include "screens/TitleScreen.h"
 #include "screens/MainScreen.h"
 #include "screens/TutorialScreen.h"
 #include "screens/GameScreen.h"
 #include "screens/GameOverScreen.h"
 #include <optional>
-#include "services/AudioService.h"
-#include "services/InputService.h"
 
 void StateService::setScreen(EScreen state)
 {
@@ -45,7 +45,7 @@ void StateService::startGame()
 {
     // if(!instance)
     //     return;
-    // InitAudioDevice();
+    InitAudioDevice();
     // InitWindow(640,544, "Jelly Rescue");
     InitWindow(screenSize.x, screenSize.y, "Jelly Rescue");
     SetTargetFPS(45);
@@ -75,7 +75,7 @@ void StateService::startGame()
 #endif
 
     CloseWindow();
-    // CloseAudioDevice();
+    CloseAudioDevice();
 }
 
 void StateService::handleMusic()

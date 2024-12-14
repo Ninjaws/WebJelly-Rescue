@@ -47,6 +47,11 @@ public:
         Vector2 mouseWorldPos = {GetMousePosition().x + camera.target.x - camera.offset.x, GetMousePosition().y};
         return mouseWorldPos;
     }
+
+    Vector2 toWorldPos(Vector2i pixelPos) {
+      Vector2 worldPos = {(float)pixelPos.x + camera.target.x - camera.offset.x, (float)pixelPos.y};
+        return worldPos;  
+    }
     // void setGame(Game game) {
     //     this->game = game;
     // }

@@ -28,7 +28,8 @@
             "settings": {},
             "extensions": [
                 "esbenp.prettier-vscode",
-                "ms-vscode.cpptools-extension-pack"
+                "ms-vscode.cpptools-extension-pack",
+                "vadimcn.vscode-lldb"
             ]
         }
     },
