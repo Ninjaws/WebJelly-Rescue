@@ -21,8 +21,8 @@ private:
         /** Check for collisions with creates */
         for (auto &crate : CollectableService::getInstance().getCrates())
         {
-            if(this->position.x + this->size > crate.getObject().getPosition().x && this->position.x - this->size < crate.getObject().getPosition().x && 
-               this->position.y + this->size > crate.getObject().getPosition().y && this->position.y - this->size < crate.getObject().getPosition().y ) {
+            if(this->position.x + this->size > crate.getObject().getPosition().x && this->position.x-this->size < crate.getObject().getPosition().x + crate.getObject().getSize().x && 
+               this->position.y + this->size > crate.getObject().getPosition().y && this->position.y-this->size < crate.getObject().getPosition().y + crate.getObject().getSize().y) {
                 crate.setHit(true);
                 AssetService::getInstance().playSound(ESound::CRATE_BREAK);
                 // AssetService::getInstance().playSound(ESound::JELLY_FREED);

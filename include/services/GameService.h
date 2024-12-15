@@ -52,13 +52,6 @@ public:
       Vector2 worldPos = {(float)pixelPos.x + camera.target.x - camera.offset.x, (float)pixelPos.y};
         return worldPos;  
     }
-    // void setGame(Game game) {
-    //     this->game = game;
-    // }
-
-    // Game& getGame() {
-    //     return this->game;
-    // }
 
     void addPlayerBullet(PBullet bullet)
     {

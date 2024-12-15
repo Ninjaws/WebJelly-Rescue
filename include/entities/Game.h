@@ -13,6 +13,7 @@
 #include "entities/Text.h"
 #include "entities/Bullet.h"
 #include "entities/PBullet.h"
+#include <sstream>
 
 class Game
 {
@@ -25,7 +26,7 @@ public:
         wrapper1.setSourceRect({0, 0, wrapper1.getSize().x, wrapper1.getSize().y});
         TextureWrapper wrapper2 = TextureWrapper(AssetService::getInstance().getBackground(EBackground::GAME2), {864.0f, (float)GetScreenHeight()}, {wrapper1.getSize().x, 0.0});
         wrapper2.setSourceRect({0, 200, wrapper2.getSize().x, 200 + wrapper2.getSize().y});
-        TextureWrapper wrapper3 = TextureWrapper(AssetService::getInstance().getBackground(EBackground::GAME3), {1792.0f, (float)GetScreenHeight()}, {wrapper1.getSize().x + wrapper2.getSize().x, 0.0});
+        TextureWrapper wrapper3 = TextureWrapper(AssetService::getInstance().getBackground(EBackground::GAME3), {1728.0f, (float)GetScreenHeight()}, {wrapper1.getSize().x + wrapper2.getSize().x, 0.0});
         wrapper3.setSourceRect({64, 200, 64 + wrapper3.getSize().x, 200 + wrapper3.getSize().y});
 
         std::vector<TextureWrapper> wrappers;
@@ -50,6 +51,7 @@ public:
 
         CollectableService::getInstance().initCollectables();
 
+        initHud();
         initPauseScreen();
         initGameOverScreen();
 
@@ -88,7 +90,8 @@ public:
         CollectableService::getInstance().collectableLogic();
 
         this->player.logic();
-        if (this->player.getTexture().getPosition().x > (StateService::getInstance().getScreenSize().x / 2.0f))
+        if (this->player.getTexture().getPosition().x > (StateService::getInstance().getScreenSize().x / 2.0f) && 
+            this->player.getTexture().getPosition().x + (StateService::getInstance().getScreenSize().x / 2.0f) < background.getBackgroundSize().x)
         {
             GameService::getInstance().getCamera().offset = {(StateService::getInstance().getScreenSize().x / 2.0f) + ((StateService::getInstance().getScreenSize().x / 2.0f) - this->player.getTexture().getPosition().x), StateService::getInstance().getScreenSize().y / 2.0f};
         }
@@ -140,18 +143,14 @@ private:
     std::vector<Text> gameOverScreenButtons;
     int hoveredGameOverScreenButton = 0;
 
-    // std::vector<PBullet> playerBullets;
+    // Font hudJellyFont;
+    Text hudJellyText;
+    TextureWrapper hudJellyTexture;
 
-    // bool isPaused = false;
-    // bool isGameOver = false;
-
-    // std::vector<Enemy> enemies
-    // std::vector<Create> crates
-    // std::vector<EBullet> enemyBullets
-    // std::vector<Jelly> jellies
-    // std::vector<Ammo> ammo
-    // std::vector<Healthpack> healthpacks
-    // Powerup powerup
+    void initHud() {
+        hudJellyTexture = TextureWrapper(AssetService::getInstance().getSprite(ESprite::JELLY),{32,32},{500,5});
+        hudJellyText = Text("0/3",EFont::SANSATION,30,0,RED,{hudJellyTexture.getPosition().x + hudJellyTexture.getSize().x*1.5f, hudJellyTexture.getPosition().y+5});
+    }
 
     void initPauseScreen()
     {
@@ -283,7 +282,12 @@ private:
 
     void drawCrosshair()
     {
-        DrawTextureEx(this->crosshair.getTexture(), GetMousePosition(), 0, 1.2f, RED);
+        DrawTextureEx(
+            this->crosshair.getTexture(),
+            {GetMousePosition().x - this->crosshair.getSize().x / 2.0f, GetMousePosition().y - this->crosshair.getSize().y / 2.0f},
+            0,
+            1.2f,
+            RED);
         // DrawTexturePro(
         //     this->crosshair.getTexture(),
         //     this->crosshair.getSourceRect(),
@@ -297,6 +301,7 @@ private:
     {
         drawHudHealth();
         drawHudBullets();
+        drawHudJellies();
     }
 
     void drawHudBullets()
@@ -350,6 +355,19 @@ private:
             // noHealthSprite[i].setPosition(coord_pos.x + noHealthTexture.getSize().x * i, coord_pos.y);
             DrawTexture(healthSprite, pos.x, pos.y, WHITE);
         }
+    }
+
+    void drawHudJellies()
+    {
+        std::stringstream stream;
+        stream.clear();
+        stream << CollectableService::getInstance().getAmountOfJelliesFreed();
+        stream << "/";
+        stream << CollectableService::getInstance().getMaxAmountOfJellies();
+        hudJellyText.setText(stream.str());
+
+        DrawTexture(hudJellyTexture.getTexture(), hudJellyTexture.getPosition().x, hudJellyTexture.getPosition().y, WHITE);
+        hudJellyText.draw();
     }
 };
 

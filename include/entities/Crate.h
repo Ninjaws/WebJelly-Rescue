@@ -37,12 +37,7 @@ public:
 
 private:
     TextureWrapper texture;
-    bool hit;                   // Whether a PBullet has hit the create
+    bool hit;                   // Whether a PBullet has hit the crate
 };
-
-
-
-
-
 
 #endif

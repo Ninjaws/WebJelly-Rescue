@@ -24,8 +24,10 @@ void AssetService::setAssets()
     SetSoundVolume(sounds[ESound::SHOOT], 0.4f);
     sounds[ESound::NO_AMMO] = loadSound("Audio/Sounds/outOfAmmo.wav");
     sounds[ESound::CRATE_BREAK] = loadSound("Audio/Sounds/crateBreak.wav");
-    SetSoundVolume(sounds[ESound::CRATE_BREAK], 1.0f);
     sounds[ESound::JELLY_FREED] = loadSound("Audio/Sounds/jellyFreed.wav");
+    sounds[ESound::HEAL_PICKUP] = loadSound("Audio/Sounds/healmag.wav");
+    sounds[ESound::AMMO_PICKUP] = loadSound("Audio/Sounds/shotgunReload.wav");
+    sounds[ESound::POWERUP] = loadSound("Audio/Sounds/powerUpSound.wav");
 
     backgrounds[EBackground::TUTORIAL] = loadTexture("Textures/TutorialBackground2.png");
     backgrounds[EBackground::GAME1] = loadTexture("Textures/GameBackground_1.png");

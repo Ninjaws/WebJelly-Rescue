@@ -35,6 +35,12 @@ class Background {
                 DrawTextureRec(texture.getTexture(), texture.getSourceRect(), texture.getPosition(),WHITE);
             }
         }
+
+        Vector2 getBackgroundSize() {
+            TextureWrapper lastbg = this->textures[this->textures.size()-1];
+            return {lastbg.getPosition().x + lastbg.getSize().x, lastbg.getPosition().y + lastbg.getSize().y};
+        }
+        
     private:
         std::vector<TextureWrapper> textures;
         // Vector2 position;

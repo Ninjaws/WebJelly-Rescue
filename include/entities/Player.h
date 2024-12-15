@@ -2,7 +2,6 @@
 #define PLAYER_H
 
 #include "raylib.h"
-#include <unordered_map>
 #include "services/AssetService.h"
 #include "services/MapService.h"
 #include "services/InputService.h"
@@ -12,6 +11,8 @@
 #include "enums/ESound.h"
 #include "entities/Vector2i.h"
 #include "entities/PBullet.h"
+#include <unordered_map>
+#include <algorithm>
 
 class Player
 {
@@ -19,7 +20,6 @@ public:
 	Player()
 	{
 		this->texture = TextureWrapper(AssetService::getInstance().getSprite(ESprite::PLAYER), {32, 32}, {200, 200});
-
 		prevFrame = GetTime();
 		spriteAnimation = {0, Right};
 		this->gunRight = TextureWrapper(AssetService::getInstance().getSprite(ESprite::PLAYER_GUN_RIGHT), {58, 29}, {0, 0});
@@ -28,6 +28,7 @@ public:
 		this->prevShot = GetTime();
 		this->health = max_health;
 	}
+	
 	~Player()
 	{
 	}
@@ -38,12 +39,13 @@ public:
 		shoot();
 		movement();
 		outofboundsCheck();
+		consumableCollision();
 	}
 
 	void draw()
 	{
 		drawGun();
-		DrawTextureRec(this->texture.getTexture(), this->texture.getSourceRect(), this->texture.getPosition(), WHITE);
+		DrawTextureRec(this->texture.getTexture(), this->texture.getSourceRect(), this->texture.getPosition(), gainedPowerup ? RED : WHITE);
 	}
 
 	TextureWrapper &getTexture()
@@ -56,15 +58,18 @@ public:
 		this->texture.setPosition(pos);
 	}
 
-	int getAmmo() {
+	int getAmmo()
+	{
 		return this->ammo;
 	}
 
-	uint8_t getHealth() {
+	uint8_t getHealth()
+	{
 		return this->health;
 	}
 
-	uint8_t getMaxHealth() {
+	uint8_t getMaxHealth()
+	{
 		return this->max_health;
 	}
 
@@ -78,7 +83,7 @@ private:
 	float moveSpeed = 5.0f;
 	float gravity = 0.6f;
 	float animationDelay = 0.2f; 			  // In seconds
-	double prevFrame;
+	double prevFrame;						  // Time since the last frame
 	Vector2i spriteAnimation; 				  // Keeps track of (1) Sprite cycling and (2) Player direction
 	enum Direction
 	{
@@ -86,19 +91,20 @@ private:
 		Left,
 		Right,
 		Up
-	}; // Used in conjuction with spriteAnimation, makes sure sprite direction matches with player direction
+	}; 										  // Used in conjuction with spriteAnimation, makes sure sprite direction matches with player direction
 
 	std::vector<Vector2i> tiles;			  // Holds eight points of the player for accurate collision
 	std::vector<unsigned int> timesCollision; // Holds the amount of times the player has collided with a tile, and which corner of the player is touching a tile
 	bool groundCollision;					  // Keeps track of whether or not the player has collided with the ground
 	bool crateTopCollision;					  // Whether the player is standing on top of a crate
 
-	uint8_t ammo;							  // Current ammo of the player
-	uint8_t max_ammo = 100;					  // Max ammo of the player
-	float firingRate= 0.2f; 				  // Delay in seconds
-	double prevShot;						  // The last time the player fired a bullet
-	uint8_t health;					  		  // Current health of the player
-	uint8_t max_health = 10;			  		  // Max health of the player
+	uint8_t ammo;			 				  // Current ammo of the player
+	uint8_t max_ammo = 100;	 				  // Max ammo of the player
+	float firingRate = 0.2f; 				  // Delay in seconds
+	double prevShot;		 				  // The last time the player fired a bullet
+	uint8_t health;			 				  // Current health of the player
+	uint8_t max_health = 10; 				  // Max health of the player
+	bool gainedPowerup = false;
 
 	void applyGravity()
 	{
@@ -290,6 +296,56 @@ private:
 		// }
 	}
 
+	void consumableCollision()
+	{
+		/** Check for collisions with ammo packs */
+		for (auto &ammoPack : CollectableService::getInstance().getAmmoPacks())
+		{
+			if (this->texture.getPosition().x + this->texture.getSize().x > ammoPack.getObject().getPosition().x && 
+			    this->texture.getPosition().x < ammoPack.getObject().getPosition().x + ammoPack.getObject().getSize().x && 
+			    this->texture.getPosition().y + this->texture.getSize().y> ammoPack.getObject().getPosition().y && 
+				this->texture.getPosition().y < ammoPack.getObject().getPosition().y + ammoPack.getObject().getSize().y)
+			{
+				ammoPack.setPickedUp(true);
+				AssetService::getInstance().playSound(ESound::AMMO_PICKUP);
+				ammo += ammoPack.getAmmoAmount();
+			}
+		}
+
+		/** Check for collisions with health packs */
+		for (auto &healthPack : CollectableService::getInstance().getHealthPacks())
+		{
+			if (this->texture.getPosition().x + this->texture.getSize().x > healthPack.getObject().getPosition().x && 
+			    this->texture.getPosition().x < healthPack.getObject().getPosition().x + healthPack.getObject().getSize().x && 
+			    this->texture.getPosition().y + this->texture.getSize().y> healthPack.getObject().getPosition().y && 
+				this->texture.getPosition().y < healthPack.getObject().getPosition().y + healthPack.getObject().getSize().y)
+			{
+				if(health < max_health) {
+					healthPack.setPickedUp(true);
+					AssetService::getInstance().playSound(ESound::HEAL_PICKUP);
+					health = std::max(health+healthPack.getHealAmount(),(int)max_health);
+				}
+			}
+		}
+
+				for (auto &powerup : CollectableService::getInstance().getPowerups())
+		{
+			if (this->texture.getPosition().x + this->texture.getSize().x > powerup.getObject().getPosition().x && 
+			    this->texture.getPosition().x < powerup.getObject().getPosition().x + powerup.getObject().getSize().x && 
+			    this->texture.getPosition().y + this->texture.getSize().y> powerup.getObject().getPosition().y && 
+				this->texture.getPosition().y < powerup.getObject().getPosition().y + powerup.getObject().getSize().y)
+			{
+				// if(health < max_health) {
+					powerup.setPickedUp(true);
+					AssetService::getInstance().playSound(ESound::POWERUP);
+					jumpPower += powerup.getExtraJumpPower();
+					gainedPowerup = true;
+					// health = std::max(health+powerup.getHealAmount(),(int)max_health);
+				// }
+			}
+		}
+	}
+
 	void outofboundsCheck()
 	{
 		if (this->texture.getPosition().y > StateService::getInstance().getScreenSize().y)
@@ -305,15 +361,15 @@ private:
 	{
 		if (GameService::getInstance().getMouseWorldPos().x > this->texture.getPosition().x + (this->gunLeft.getSize().x) && spriteAnimation.y == Right)
 		{
-			float gunRotationRight = atan2(GameService::getInstance().getMouseWorldPos().y - this->texture.getPosition().y,
-										   GameService::getInstance().getMouseWorldPos().x - this->texture.getPosition().x);
-			this->gunRight.setRotation(gunRotationRight * 90);
+			float gunRotationRight = atan2(GameService::getInstance().getMouseWorldPos().y - (this->texture.getPosition().y + this->texture.getSize().y / 2.0),
+										   GameService::getInstance().getMouseWorldPos().x - (this->texture.getPosition().x + this->texture.getSize().x / 2.0));
+			this->gunRight.setRotation(gunRotationRight * 180 / M_PI);
 		}
 		else if (GameService::getInstance().getMouseWorldPos().x + (this->gunLeft.getSize().x / 2) < this->texture.getPosition().x && spriteAnimation.y == Left)
 		{
-			float gunRotationLeft = atan2(GameService::getInstance().getMouseWorldPos().y - this->texture.getPosition().y,
-										  this->texture.getPosition().x - GameService::getInstance().getMouseWorldPos().x);
-			this->gunLeft.setRotation(-gunRotationLeft * 90);
+			float gunRotationLeft = atan2(GameService::getInstance().getMouseWorldPos().y - (this->texture.getPosition().y + this->texture.getSize().y / 2.0),
+										  (this->texture.getPosition().x + this->texture.getSize().x / 2.0) - GameService::getInstance().getMouseWorldPos().x);
+			this->gunLeft.setRotation(-gunRotationLeft * 180 / M_PI);
 		}
 	}
 
@@ -321,11 +377,13 @@ private:
 	{
 		if (GameService::getInstance().getMouseWorldPos().x > this->texture.getPosition().x + this->gunLeft.getSize().x && spriteAnimation.y == Right)
 		{
+			// + this->texture.getSize().x / 2.0f
+			// + this->texture.getSize().y / 2.0f
 			DrawTexturePro(
 				this->gunRight.getTexture(),
 				{0, 0, this->gunRight.getSize().x, this->gunRight.getSize().y},
 				{this->texture.getPosition().x + this->texture.getSize().x / 2.0f,
-				 this->texture.getPosition().y + this->texture.getSize().x / 2.0f,
+				 this->texture.getPosition().y + this->texture.getSize().y / 2.0f,
 				 this->gunRight.getSize().x,
 				 this->gunRight.getSize().y},
 				{this->gunRight.getSize().x / 2.0f, this->gunRight.getSize().y / 2.0f},
@@ -338,7 +396,7 @@ private:
 				this->gunLeft.getTexture(),
 				{0, 0, this->gunLeft.getSize().x, this->gunLeft.getSize().y},
 				{this->texture.getPosition().x + this->texture.getSize().x / 2.0f,
-				 this->texture.getPosition().y + this->texture.getSize().x / 2.0f,
+				 this->texture.getPosition().y + this->texture.getSize().y / 2.0f,
 				 this->gunLeft.getSize().x,
 				 this->gunLeft.getSize().y},
 				{this->gunLeft.getSize().x / 2.0f, this->gunLeft.getSize().y / 2.0f},
@@ -352,9 +410,9 @@ private:
 		if (InputService::getInstance().isMouseButtonDown(MOUSE_BUTTON_LEFT) && GetTime() - prevShot > firingRate && groundCollision)
 		{
 			prevShot = GetTime();
-			if (ammo == 0 || (GameService::getInstance().getMouseWorldPos().x > (this->texture.getPosition().x - this->gunLeft.getSize().x/2.0f) && spriteAnimation.y == Left) ||
-							 (GameService::getInstance().getMouseWorldPos().x < (this->texture.getPosition().x + this->texture.getSize().x + gunLeft.getSize().x/2.0f) && spriteAnimation.y == Right))
-				{
+			if (ammo == 0 || (GameService::getInstance().getMouseWorldPos().x > (this->texture.getPosition().x - this->gunLeft.getSize().x / 2.0f) && spriteAnimation.y == Left) ||
+				(GameService::getInstance().getMouseWorldPos().x < (this->texture.getPosition().x + this->texture.getSize().x + gunLeft.getSize().x / 2.0f) && spriteAnimation.y == Right))
+			{
 				// Play empty gun sound
 				AssetService::getInstance().playSound(ESound::NO_AMMO);
 				return;
@@ -363,30 +421,23 @@ private:
 			AssetService::getInstance().playSound(ESound::SHOOT);
 			ammo--;
 
-			Vector2 bulletStartLocation = {this->texture.getPosition().x + 10, this->texture.getPosition().y + 10};
 			Vector2 mouseWorldPos = GameService::getInstance().getMouseWorldPos();
-
-			if (spriteAnimation.y == Left)
-			{
-				bulletStartLocation.y = this->texture.getPosition().y + 10;
-				bulletStartLocation.x = this->texture.getPosition().x - 5;
-			}
-			if (spriteAnimation.y == Right)
-			{
-				bulletStartLocation.y = this->texture.getPosition().y + 10;
-				bulletStartLocation.x = this->texture.getPosition().x + 22;
-			}
 
 			if (mouseWorldPos.x > this->texture.getPosition().x + (this->gunLeft.getSize().x) && spriteAnimation.y == Right ||
 				mouseWorldPos.x + (this->gunLeft.getSize().x / 2) < this->texture.getPosition().x && spriteAnimation.y == Left)
 			{
-				// PlayGunSound();
-				// currentAmmo--;
-				// .push_back(bulletStartLocation);
-				float angleShot = atan2(mouseWorldPos.y - bulletStartLocation.y,
-										mouseWorldPos.x - bulletStartLocation.x);
+
+				float angleShot = atan2(mouseWorldPos.y - (this->texture.getPosition().y + this->texture.getSize().y / 2.0),
+										mouseWorldPos.x - (this->texture.getPosition().x + this->texture.getSize().x / 2.0));
+
+				/** Making the bullet originate from the gun's mouth */
+				float offsetDistance = this->gunLeft.getSize().x / 2;
+				float offsetX = cos(angleShot) * offsetDistance;
+				float offsetY = sin(angleShot) * offsetDistance;
+				Vector2 bulletStartLocation = {this->texture.getPosition().x + this->texture.getSize().x / 2.0f + offsetX,
+											   this->texture.getPosition().y + this->texture.getSize().y / 2.0f + offsetY};
+
 				GameService::getInstance().addPlayerBullet(PBullet(bulletStartLocation, angleShot));
-				// bulletDirections.push_back(angleShot);
 			}
 		}
 	}

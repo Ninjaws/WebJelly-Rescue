@@ -7,6 +7,10 @@
 #include "entities/Vector2i.h"
 #include "entities/Crate.h"
 #include "entities/PBullet.h"
+#include "entities/Jelly.h"
+#include "entities/AmmoPack.h"
+#include "entities/HealthPack.h"
+#include "entities/Powerup.h"
 #include <vector>
 
 class CollectableService : public Service<CollectableService>
@@ -15,52 +19,77 @@ public:
     void initCollectables()
     {
         initCrates();
+        initJellies();
+        initAmmoPacks();
+        initHealthPacks();
+        initPowerups();
     }
 
     void collectableLogic()
     {
         crateLogic();
+        jellyLogic();
+        ammoPackLogic();
+        healthPackLogic();
+        powerupLogic();
     }
 
     void drawCollectables()
     {
         drawCrates();
+        drawJellies();
+        drawAmmoPacks();
+        drawHealthpacks();
+        drawPowerups();
     }
 
-    //  void checkCratesForCollision(PBullet bullet)
-    // {
-    //     for (auto it = crates.begin(); it != crates.end();)
-    //     {
-    //         auto &crate = *it;
-    //         // if (*it % 2 == 0) {
-    //         if (crate.bulletCollision(bullet))
-    //         {
-    //             Vector2 pos = crate.getObject().getPosition();
-    //             Vector2i tilePos = Vector2i(pos.x / MapService::getInstance().getMap().getTileSize(), pos.y / MapService::getInstance().getMap().getTileSize());
-    //             MapService::getInstance().getMap().updateColmapTile(tilePos, false);
-    //             it = crates.erase(it); // erase returns the next iterator
-    //         }
-    //         else
-    //         {
-    //             ++it;
-    //         }
-    //     }
-    // }
-
-    std::vector<Crate>& getCrates() {
+    std::vector<Crate> &getCrates()
+    {
         return this->crates;
     }
 
+    std::vector<AmmoPack> &getAmmoPacks()
+    {
+        return this->ammoPacks;
+    }
+
+    std::vector<HealthPack> &getHealthPacks()
+    {
+        return this->healthPacks;
+    }
+
+    std::vector<Powerup> &getPowerups() {
+        return this->powerUps;
+    }
+
+    int getMaxAmountOfJellies()
+    {
+        return this->amountOfCrates;
+    }
+
+    int getAmountOfJelliesFreed()
+    {
+        return this->jellies.size();
+    }
+
 private:
+    int amountOfCrates = 3;
+    int amountOfAmmoPacks = 4;
+    int amountOfHealthPacks = 4;
+    int amountOfPowerups = 1;
+    std::vector<Crate> crates;
+    std::vector<AmmoPack> ammoPacks;
+    std::vector<HealthPack> healthPacks;
+    std::vector<Jelly> jellies;
+    std::vector<Powerup> powerUps;
+
     void initCrates()
     {
         crates.clear();
-        Vector2 location;
         int tileSize = MapService::getInstance().getMap().getTileSize();
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < amountOfCrates; i++)
         {
             crates.push_back(Crate());
-            // crateLocation.push_back(location);
         }
         crates[0].getObject().setPosition({38.0f * tileSize, 9.0f * tileSize});
         crates[1].getObject().setPosition({41.0f * tileSize, 5.0f * tileSize});
@@ -71,17 +100,50 @@ private:
             Vector2i crateTilePos = Vector2i(crates[i].getObject().getPosition().x / tileSize, crates[i].getObject().getPosition().y / tileSize);
             MapService::getInstance().getMap().updateColmapTile(crateTilePos, true);
         }
-        // crates[0].y = 9 * tileSize;
-
-        // crateLocation[1].x = 41 * tileSize;
-        // crateLocation[1].y = 5 * tileSize;
-
-        // crateLocation[2].x = 68 * tileSize;
-        // crateLocation[2].y = 4 * tileSize;
     }
 
     void initJellies()
     {
+        jellies.clear();
+    }
+
+    void initAmmoPacks()
+    {
+        ammoPacks.clear();
+        int tileSize = MapService::getInstance().getMap().getTileSize();
+        for (int i = 0; i < amountOfAmmoPacks; i++)
+        {
+            ammoPacks.push_back(AmmoPack());
+        }
+        ammoPacks[0].getObject().setPosition({32.0f * tileSize, 9.0f * tileSize});
+        ammoPacks[1].getObject().setPosition({48.0f * tileSize, 5.0f * tileSize});
+        ammoPacks[2].getObject().setPosition({88.0f * tileSize, 9.0f * tileSize});
+        ammoPacks[3].getObject().setPosition({105.0f * tileSize, 15.0f * tileSize});
+    }
+
+    void initHealthPacks()
+    {
+        healthPacks.clear();
+        int tileSize = MapService::getInstance().getMap().getTileSize();
+        for (int i = 0; i < amountOfHealthPacks; i++)
+        {
+            healthPacks.push_back(HealthPack());
+        }
+        healthPacks[0].getObject().setPosition({28.0f * tileSize, 10.0f * tileSize});
+        healthPacks[1].getObject().setPosition({64.0f * tileSize, 6.0f * tileSize});
+        healthPacks[2].getObject().setPosition({118.0f * tileSize, 11.0f * tileSize});
+        healthPacks[3].getObject().setPosition({74.0f * tileSize, 8.0f * tileSize});
+    }
+
+    void initPowerups()
+    {
+        powerUps.clear();
+        int tileSize = MapService::getInstance().getMap().getTileSize();
+        for (int i = 0; i < amountOfPowerups; i++)
+        {
+            powerUps.push_back(Powerup());
+        }
+        powerUps[0].getObject().setPosition({41.0f * tileSize+8, 10.0f * tileSize-25});
     }
 
     void crateLogic()
@@ -91,12 +153,16 @@ private:
             auto &crate = *it;
             /**
              * If the crate has been hit:
-             * 1. Remove the collision tile from the collision map
-             * 
+             * 1. Create a Jelly on the location of the crate
+             * 2. Remove the collision tile from the collision map
+             * 3. Remove the crate
              */
             if (crate.hasBeenHit())
             {
                 Vector2 pos = crate.getObject().getPosition();
+
+                jellies.push_back(Jelly(pos));
+
                 Vector2i tilePos = Vector2i(pos.x / MapService::getInstance().getMap().getTileSize(), pos.y / MapService::getInstance().getMap().getTileSize());
                 MapService::getInstance().getMap().updateColmapTile(tilePos, false);
                 it = crates.erase(it);
@@ -108,35 +174,61 @@ private:
         }
     }
 
-    // void destroyCrate(int index) {
-    //     Vector2 pos = crates[index].getObject().getPosition();
-    //     Vector2i tilePos = Vector2i(pos.x/MapService::getInstance().getMap().getTileSize(), pos.y/MapService::getInstance().getMap().getTileSize());
-    //     MapService::getInstance().getMap().updateColmapTile(tilePos, false);
-    //     crates.erase(crates.begin() + index);
-    // }
-
-    // void checkCratesForCollision(PBullet bullet)
-    // {
-    //     for (auto it = crates.begin(); it != crates.end();)
-    //     {
-    //         auto &crate = *it;
-    //         // if (*it % 2 == 0) {
-    //         if (crate.bulletCollision(bullet))
-    //         {
-    //             Vector2 pos = crate.getObject().getPosition();
-    //             Vector2i tilePos = Vector2i(pos.x / MapService::getInstance().getMap().getTileSize(), pos.y / MapService::getInstance().getMap().getTileSize());
-    //             MapService::getInstance().getMap().updateColmapTile(tilePos, false);
-    //             it = crates.erase(it); // erase returns the next iterator
-    //         }
-    //         else
-    //         {
-    //             ++it;
-    //         }
-    //     }
-    // }
-
     void jellyLogic()
     {
+        for (int i = 0; i < jellies.size(); i++)
+        {
+            jellies[i].logic();
+        }
+    }
+
+    void ammoPackLogic()
+    {
+        for (auto it = ammoPacks.begin(); it != ammoPacks.end();)
+        {
+            auto &ammoPack = *it;
+            if (ammoPack.hasBeenPickedUp())
+            {
+                it = ammoPacks.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+    }
+
+    void healthPackLogic()
+    {
+        for (auto it = healthPacks.begin(); it != healthPacks.end();)
+        {
+            auto &healthPack = *it;
+            if (healthPack.hasBeenPickedUp())
+            {
+                it = healthPacks.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+    }
+
+    void powerupLogic()
+    {
+        for (auto it = powerUps.begin(); it != powerUps.end();)
+        {
+            auto &powerUp = *it;
+            if (powerUp.hasBeenPickedUp())
+            {
+                it = powerUps.erase(it);
+            }
+            else
+            {
+                powerUp.logic();
+                ++it;
+            }
+        }
     }
 
     void drawCrates()
@@ -149,36 +241,35 @@ private:
 
     void drawJellies()
     {
-    }
-
-    void drawHudJellies()
-    {
+        for (int i = 0; i < jellies.size(); i++)
+        {
+            jellies[i].draw();
+        }
     }
 
     void drawAmmoPacks()
     {
+        for (int i = 0; i < ammoPacks.size(); i++)
+        {
+            ammoPacks[i].draw();
+        }
     }
 
     void drawHealthpacks()
     {
+        for (int i = 0; i < healthPacks.size(); i++)
+        {
+            healthPacks[i].draw();
+        }
     }
 
-    // sf::Text jelliesFreed;						// Holds the text that shows how many jellies are freed
-    // sf::Font jelliesFreedFont;					// Holds the font used for the text of the display
-
-    // sf::Sprite jelliesFreedSprite;				// Holds the sprite of the jelly in the top right corner
-
-    // Vector2i jellyDisplayLocation;			// Holds the location where the amount of jellies freed are displayed
-    std::vector<Crate> crates;
-    // std::vector<sf::Sprite> crateSprite;		// Holds the sprites of the crates
-    // std::vector<sf::Sprite> jellySprite;		// Holds the sprites of the jellies inside the crates
-    // std::vector<Vector2> crateLocation;	// Holds the locations of the crates/jellies
-    // std::vector<Vector2> velocity; // Makes sure the jellies jump when the crate is destroyed
-    // std::vector<bool> collision;				// Keeps track of whether or not the player has collided with a crate
-    // std::vector<bool> crateDestroyed;			// Keeps track of whether or not a crate has been destroyed
-
-    // unsigned int totalAmntCrates;     // Holds the total amount of crates
-    // unsigned int amntCratesDestroyed; // Holds the amount of crates that have been destroyed
+    void drawPowerups()
+    {
+        for (int i = 0; i < powerUps.size(); i++)
+        {
+            powerUps[i].draw();
+        }
+    }
 };
 
 #endif
