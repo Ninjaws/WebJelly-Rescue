@@ -15,7 +15,6 @@ class TextureWrapper {
             this->sourceRect = sourceRect;
         }
         ~TextureWrapper() {
-
         }
 
         Texture2D getTexture() {

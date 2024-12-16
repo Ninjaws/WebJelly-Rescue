@@ -28,7 +28,7 @@ public:
 		this->prevShot = GetTime();
 		this->health = max_health;
 	}
-	
+
 	~Player()
 	{
 	}
@@ -82,28 +82,28 @@ private:
 	float jumpPower = 7.2f;
 	float moveSpeed = 5.0f;
 	float gravity = 0.6f;
-	float animationDelay = 0.2f; 			  // In seconds
-	double prevFrame;						  // Time since the last frame
-	Vector2i spriteAnimation; 				  // Keeps track of (1) Sprite cycling and (2) Player direction
+	float animationDelay = 0.2f; // In seconds
+	double prevFrame;			 // Time since the last frame
+	Vector2i spriteAnimation;	 // Keeps track of (1) Sprite cycling and (2) Player direction
 	enum Direction
 	{
 		Down,
 		Left,
 		Right,
 		Up
-	}; 										  // Used in conjuction with spriteAnimation, makes sure sprite direction matches with player direction
+	}; // Used in conjuction with spriteAnimation, makes sure sprite direction matches with player direction
 
 	std::vector<Vector2i> tiles;			  // Holds eight points of the player for accurate collision
 	std::vector<unsigned int> timesCollision; // Holds the amount of times the player has collided with a tile, and which corner of the player is touching a tile
 	bool groundCollision;					  // Keeps track of whether or not the player has collided with the ground
 	bool crateTopCollision;					  // Whether the player is standing on top of a crate
 
-	uint8_t ammo;			 				  // Current ammo of the player
-	uint8_t max_ammo = 100;	 				  // Max ammo of the player
-	float firingRate = 0.2f; 				  // Delay in seconds
-	double prevShot;		 				  // The last time the player fired a bullet
-	uint8_t health;			 				  // Current health of the player
-	uint8_t max_health = 10; 				  // Max health of the player
+	uint8_t ammo;			 // Current ammo of the player
+	uint8_t max_ammo = 100;	 // Max ammo of the player
+	float firingRate = 0.2f; // Delay in seconds
+	double prevShot;		 // The last time the player fired a bullet
+	uint8_t health;			 // Current health of the player
+	uint8_t max_health = 10; // Max health of the player
 	bool gainedPowerup = false;
 
 	void applyGravity()
@@ -301,9 +301,9 @@ private:
 		/** Check for collisions with ammo packs */
 		for (auto &ammoPack : CollectableService::getInstance().getAmmoPacks())
 		{
-			if (this->texture.getPosition().x + this->texture.getSize().x > ammoPack.getObject().getPosition().x && 
-			    this->texture.getPosition().x < ammoPack.getObject().getPosition().x + ammoPack.getObject().getSize().x && 
-			    this->texture.getPosition().y + this->texture.getSize().y> ammoPack.getObject().getPosition().y && 
+			if (this->texture.getPosition().x + this->texture.getSize().x > ammoPack.getObject().getPosition().x &&
+				this->texture.getPosition().x<ammoPack.getObject().getPosition().x + ammoPack.getObject().getSize().x && 
+				this->texture.getPosition().y + this->texture.getSize().y> ammoPack.getObject().getPosition().y &&
 				this->texture.getPosition().y < ammoPack.getObject().getPosition().y + ammoPack.getObject().getSize().y)
 			{
 				ammoPack.setPickedUp(true);
@@ -315,34 +315,46 @@ private:
 		/** Check for collisions with health packs */
 		for (auto &healthPack : CollectableService::getInstance().getHealthPacks())
 		{
-			if (this->texture.getPosition().x + this->texture.getSize().x > healthPack.getObject().getPosition().x && 
-			    this->texture.getPosition().x < healthPack.getObject().getPosition().x + healthPack.getObject().getSize().x && 
-			    this->texture.getPosition().y + this->texture.getSize().y> healthPack.getObject().getPosition().y && 
+			if (this->texture.getPosition().x + this->texture.getSize().x > healthPack.getObject().getPosition().x &&
+				this->texture.getPosition().x<healthPack.getObject().getPosition().x + healthPack.getObject().getSize().x && 
+				this->texture.getPosition().y + this->texture.getSize().y> healthPack.getObject().getPosition().y &&
 				this->texture.getPosition().y < healthPack.getObject().getPosition().y + healthPack.getObject().getSize().y)
 			{
-				if(health < max_health) {
+				if (health < max_health)
+				{
 					healthPack.setPickedUp(true);
 					AssetService::getInstance().playSound(ESound::HEAL_PICKUP);
-					health = std::max(health+healthPack.getHealAmount(),(int)max_health);
+					health = std::max(health + healthPack.getHealAmount(), (int)max_health);
 				}
 			}
 		}
 
-				for (auto &powerup : CollectableService::getInstance().getPowerups())
+		/** Checks for collisions with powerups */
+		for (auto &powerup : CollectableService::getInstance().getPowerups())
 		{
-			if (this->texture.getPosition().x + this->texture.getSize().x > powerup.getObject().getPosition().x && 
-			    this->texture.getPosition().x < powerup.getObject().getPosition().x + powerup.getObject().getSize().x && 
-			    this->texture.getPosition().y + this->texture.getSize().y> powerup.getObject().getPosition().y && 
+			if (this->texture.getPosition().x + this->texture.getSize().x > powerup.getObject().getPosition().x &&
+				this->texture.getPosition().x<powerup.getObject().getPosition().x + powerup.getObject().getSize().x && 
+				this->texture.getPosition().y + this->texture.getSize().y> powerup.getObject().getPosition().y &&
 				this->texture.getPosition().y < powerup.getObject().getPosition().y + powerup.getObject().getSize().y)
 			{
 				// if(health < max_health) {
-					powerup.setPickedUp(true);
-					AssetService::getInstance().playSound(ESound::POWERUP);
-					jumpPower += powerup.getExtraJumpPower();
-					gainedPowerup = true;
-					// health = std::max(health+powerup.getHealAmount(),(int)max_health);
+				powerup.setPickedUp(true);
+				AssetService::getInstance().playSound(ESound::POWERUP);
+				jumpPower += powerup.getExtraJumpPower();
+				gainedPowerup = true;
+				// health = std::max(health+powerup.getHealAmount(),(int)max_health);
 				// }
 			}
+		}
+
+		/** Checks for collisions with the finish flag */
+		auto &flag = CollectableService::getInstance().getFlag();
+		if (this->texture.getPosition().x + this->texture.getSize().x > flag.getObject().getPosition().x &&
+			this->texture.getPosition().x<flag.getObject().getPosition().x + flag.getObject().getSize().x && 
+			this->texture.getPosition().y + this->texture.getSize().y> flag.getObject().getPosition().y &&
+			this->texture.getPosition().y < flag.getObject().getPosition().y + flag.getObject().getSize().y)
+		{
+			flag.setTouched(true);
 		}
 	}
 

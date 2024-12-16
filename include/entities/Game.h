@@ -9,6 +9,7 @@
 #include "services/InputService.h"
 #include "services/GameService.h"
 #include "services/CollectableService.h"
+#include "services/EnemyService.h"
 #include "entities/Player.h"
 #include "entities/Text.h"
 #include "entities/Bullet.h"
@@ -54,6 +55,7 @@ public:
         initHud();
         initPauseScreen();
         initGameOverScreen();
+        EnemyService::getInstance().initEnemies();
 
         InputService::getInstance().setKeysToWatch({KEY_A, KEY_W, KEY_S, KEY_D, KEY_ENTER}, {MOUSE_BUTTON_LEFT});
         AudioService::getInstance().setMusic(EMusic::GAME);
@@ -89,8 +91,10 @@ public:
         GameService::getInstance().bulletLogic();
         CollectableService::getInstance().collectableLogic();
 
+        EnemyService::getInstance().enemyLogic();
+
         this->player.logic();
-        if (this->player.getTexture().getPosition().x > (StateService::getInstance().getScreenSize().x / 2.0f) && 
+        if (this->player.getTexture().getPosition().x > (StateService::getInstance().getScreenSize().x / 2.0f) &&
             this->player.getTexture().getPosition().x + (StateService::getInstance().getScreenSize().x / 2.0f) < background.getBackgroundSize().x)
         {
             GameService::getInstance().getCamera().offset = {(StateService::getInstance().getScreenSize().x / 2.0f) + ((StateService::getInstance().getScreenSize().x / 2.0f) - this->player.getTexture().getPosition().x), StateService::getInstance().getScreenSize().y / 2.0f};
@@ -112,6 +116,7 @@ public:
         GameService::getInstance().drawBullets();
         this->map.draw();
         CollectableService::getInstance().drawCollectables();
+        EnemyService::getInstance().drawEnemies();
         this->player.draw();
 
         EndMode2D();
@@ -130,11 +135,11 @@ public:
     }
 
 private:
-    // Camera2D camera;
     Background background;
     Map map;
     Player player;
     TextureWrapper crosshair;
+    std::vector<Enemy> enemies;
 
     std::vector<Text> pauseScreenButtons;
     int hoveredPauseScreenButton = 0;
@@ -143,13 +148,13 @@ private:
     std::vector<Text> gameOverScreenButtons;
     int hoveredGameOverScreenButton = 0;
 
-    // Font hudJellyFont;
     Text hudJellyText;
     TextureWrapper hudJellyTexture;
 
-    void initHud() {
-        hudJellyTexture = TextureWrapper(AssetService::getInstance().getSprite(ESprite::JELLY),{32,32},{500,5});
-        hudJellyText = Text("0/3",EFont::SANSATION,30,0,RED,{hudJellyTexture.getPosition().x + hudJellyTexture.getSize().x*1.5f, hudJellyTexture.getPosition().y+5});
+    void initHud()
+    {
+        hudJellyTexture = TextureWrapper(AssetService::getInstance().getSprite(ESprite::JELLY), {32, 32}, {500, 5});
+        hudJellyText = Text("0/3", EFont::SANSATION, 30, 0, RED, {hudJellyTexture.getPosition().x + hudJellyTexture.getSize().x * 1.5f, hudJellyTexture.getPosition().y + 5});
     }
 
     void initPauseScreen()

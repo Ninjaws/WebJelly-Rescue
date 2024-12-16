@@ -28,6 +28,9 @@ void AssetService::setAssets()
     sounds[ESound::HEAL_PICKUP] = loadSound("Audio/Sounds/healmag.wav");
     sounds[ESound::AMMO_PICKUP] = loadSound("Audio/Sounds/shotgunReload.wav");
     sounds[ESound::POWERUP] = loadSound("Audio/Sounds/powerUpSound.wav");
+    sounds[ESound::VICTORY] = loadSound("Audio/Sounds/victorySound.wav");
+    sounds[ESound::PLAYER_DAMAGE] = loadSound("Audio/Sounds/WaterBalloon.wav");
+    sounds[ESound::ENEMY_DEFEATED] = loadSound("Audio/Sounds/pain.wav");
 
     backgrounds[EBackground::TUTORIAL] = loadTexture("Textures/TutorialBackground2.png");
     backgrounds[EBackground::GAME1] = loadTexture("Textures/GameBackground_1.png");
@@ -53,6 +56,7 @@ void AssetService::setAssets()
     sprites[ESprite::HUD_HEART_EMPTY] = loadTexture("Textures/heart_empty.png");
     sprites[ESprite::HUD_AMMO] = loadTexture("Textures/bullet_hud.png");
     sprites[ESprite::CROSSHAIR] = loadTexture("Textures/crosshair_3.png");
+    sprites[ESprite::FLAG] = loadTexture("Textures/flag.png");
 }
 
 Font AssetService::getFont(EFont font, int fontSize)

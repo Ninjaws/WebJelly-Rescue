@@ -58,25 +58,6 @@ public:
         this->playerBullets.push_back(bullet);
     }
 
-    // std::list<PBullet>& getPlayerBullets() {
-    //     return this->playerBullets;
-    // }
-
-    // void removeCollidedBullets()
-    // {
-    //     for (auto it = playerBullets.begin(); it != playerBullets.end(); /* no increment here */)
-    //     {
-    //         if (it->getHasCollided())
-    //         {
-    //             it = playerBullets.erase(it); // Remove element and get the next valid iterator
-    //         }
-    //         else
-    //         {
-    //             ++it; // Only increment if no removal happens
-    //         }
-    //     }
-    // }
-
     void bulletLogic()
     {
         for (auto it = this->playerBullets.begin(); it != this->playerBullets.end();)

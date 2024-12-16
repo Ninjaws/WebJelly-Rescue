@@ -40,13 +40,6 @@ MainScreen::MainScreen()
 
 void MainScreen::logic()
 {
-    // Vector2 mouseD = GetMouseDelta();
-    // std::cout << mouseD.y <<std::endl;
-    // if (mouseD.x != 0.0f && mouseD.y != 0.0f)
-    // {
-    // mouseLogic();
-    // }
-
     keyboardLogic();
 
     clickLogic();

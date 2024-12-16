@@ -6,13 +6,16 @@
 #include "services/MapService.h"
 #include "entities/Vector2i.h"
 #include "entities/Crate.h"
-#include "entities/PBullet.h"
 #include "entities/Jelly.h"
 #include "entities/AmmoPack.h"
 #include "entities/HealthPack.h"
 #include "entities/Powerup.h"
+#include "entities/Flag.h"
 #include <vector>
 
+/**
+ * Service that manages the collectables (jellies), consumables (Ammo, health, powerups), and the finish flag
+ */
 class CollectableService : public Service<CollectableService>
 {
 public:
@@ -23,6 +26,7 @@ public:
         initAmmoPacks();
         initHealthPacks();
         initPowerups();
+        initFlag();
     }
 
     void collectableLogic()
@@ -32,6 +36,7 @@ public:
         ammoPackLogic();
         healthPackLogic();
         powerupLogic();
+        flag.logic();
     }
 
     void drawCollectables()
@@ -41,6 +46,7 @@ public:
         drawAmmoPacks();
         drawHealthpacks();
         drawPowerups();
+        flag.draw();
     }
 
     std::vector<Crate> &getCrates()
@@ -60,6 +66,10 @@ public:
 
     std::vector<Powerup> &getPowerups() {
         return this->powerUps;
+    }
+
+    Flag& getFlag() {
+        return this->flag;
     }
 
     int getMaxAmountOfJellies()
@@ -82,6 +92,7 @@ private:
     std::vector<HealthPack> healthPacks;
     std::vector<Jelly> jellies;
     std::vector<Powerup> powerUps;
+    Flag flag;
 
     void initCrates()
     {
@@ -144,6 +155,11 @@ private:
             powerUps.push_back(Powerup());
         }
         powerUps[0].getObject().setPosition({41.0f * tileSize+8, 10.0f * tileSize-25});
+    }
+
+    void initFlag() {
+        int tileSize = MapService::getInstance().getMap().getTileSize();
+        this->flag = Flag({118.0f*tileSize-tileSize/2.0f, 3.0f * tileSize-8});
     }
 
     void crateLogic()
