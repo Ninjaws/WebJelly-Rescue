@@ -66,7 +66,7 @@ public:
 
     void logic()
     {
-        this->crosshair.setPosition(GetMousePosition());
+        this->crosshair.setPosition(InputService::getInstance().getMousePos());
 
         if (GameService::getInstance().isPaused())
         {
@@ -96,6 +96,9 @@ public:
         {
             GameService::getInstance().getCamera().offset = {(StateService::getInstance().getScreenSize().x / 2.0f) + ((StateService::getInstance().getScreenSize().x / 2.0f) - player.getTexture().getPosition().x), StateService::getInstance().getScreenSize().y / 2.0f};
         }
+        if(player.isFinishReached()) {
+            StateService::getInstance().setScreen(EScreen::VICTORY);
+        }
     }
 
     void draw()
@@ -113,6 +116,7 @@ public:
 
         EndMode2D();
 
+        drawHud();
         if (GameService::getInstance().isPaused())
         {
             drawPaused();
@@ -120,9 +124,9 @@ public:
         else if (GameService::getInstance().isGameOver())
         {
             drawGameOver();
+        } else {
+            drawCrosshair();
         }
-        drawHud();
-        drawCrosshair();
         EndDrawing();
     }
 
@@ -184,7 +188,7 @@ private:
         const int SPACE_PER_ITEM = TOTAL_SPACE / AMNT_OF_BUTTONS;
         for (int i = 0; i < AMNT_OF_BUTTONS; i++)
         {
-            Text txt = Text("Play Again", EFont::SANSATION, 30, 0, GRAY);
+            Text txt = Text("Play Again", EFont::SANSATION, 30, 0, BLACK);
             gameOverScreenButtons.push_back(txt);
         }
         gameOverScreenButtons[0].setColor(WHITE);
@@ -229,7 +233,7 @@ private:
     {
         if (InputService::getInstance().isKeyPressed(KEY_D) || InputService::getInstance().isKeyPressed(KEY_A))
         {
-            gameOverScreenButtons[hoveredGameOverScreenButton].setColor(GRAY);
+            gameOverScreenButtons[hoveredGameOverScreenButton].setColor(BLACK);
             /** Move up or down depending on the pressed button. +4 is used so that -1 becomes 3 (the last button) */
             hoveredGameOverScreenButton = ((hoveredGameOverScreenButton - (InputService::getInstance().isKeyPressed(KEY_D) ? -1 : 1)) + gameOverScreenButtons.size()) % gameOverScreenButtons.size();
             gameOverScreenButtons[hoveredGameOverScreenButton].setColor(WHITE);
@@ -254,7 +258,7 @@ private:
     void drawPaused()
     {
         // 100, 100, 255, 60
-        DrawRectangle(0, 0, StateService::getInstance().getScreenSize().x, StateService::getInstance().getScreenSize().y, {0, 0, 255, 100});
+        DrawRectangle(0, 0, StateService::getInstance().getScreenSize().x, StateService::getInstance().getScreenSize().y, {0, 0, 0, 200});
         if (pauseScreenButtons.size() > 0)
         {
             for (int i = 0; i < pauseScreenButtons.size(); i++)
@@ -266,7 +270,7 @@ private:
 
     void drawGameOver()
     {
-        DrawRectangle(0, 0, StateService::getInstance().getScreenSize().x, StateService::getInstance().getScreenSize().y, {255, 0, 0, 100});
+        DrawRectangle(0, 0, StateService::getInstance().getScreenSize().x, StateService::getInstance().getScreenSize().y, {100, 0, 0, 200});
 
         gameOverText.draw();
 
@@ -280,17 +284,10 @@ private:
     {
         DrawTextureEx(
             this->crosshair.getTexture(),
-            {GetMousePosition().x - this->crosshair.getSize().x / 2.0f, GetMousePosition().y - this->crosshair.getSize().y / 2.0f},
+            {InputService::getInstance().getMousePos().x - this->crosshair.getSize().x / 2.0f, InputService::getInstance().getMousePos().y - this->crosshair.getSize().y / 2.0f},
             0,
             1.2f,
             RED);
-        // DrawTexturePro(
-        //     this->crosshair.getTexture(),
-        //     this->crosshair.getSourceRect(),
-        //     {GetMousePosition().x, GetMousePosition().y, GetMousePosition().x+this->crosshair.getSize().x, GetMousePosition().y+this->crosshair.getSize().y},
-        //     {this->crosshair.getSize().x/2.0f, this->crosshair.getSize().y/2.0f},
-        //     0,
-        //     WHITE);
     }
 
     void drawHud()

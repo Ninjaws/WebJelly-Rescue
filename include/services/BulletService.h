@@ -4,6 +4,7 @@
 #include "raylib.h"
 #include "services/Service.h"
 #include "services/AssetService.h"
+#include "entities/Bullet.h"
 #include "entities/PBullet.h"
 #include "entities/EBullet.h"
 #include <optional>

@@ -14,6 +14,8 @@ class VictoryScreen : public Screen
 
 public:
     VictoryScreen();
+    ~VictoryScreen() {
+    }
     void logic() override;
     void draw() override;
 

@@ -6,6 +6,7 @@
 #include "entities/TextureWrapper.h"
 #include "entities/Vector2i.h"
 #include <cmath>
+#include <cstdint>
 
 class Enemy
 {
@@ -47,7 +48,7 @@ public:
         return this->texture;
     }
 
-    u_int8_t getHealth()
+    uint8_t getHealth()
     {
         return this->health;
     }
@@ -61,8 +62,8 @@ private:
     TextureWrapper texture;
     TextureWrapper gunLeft;
     TextureWrapper gunRight;
-    u_int8_t health;
-    u_int8_t maxHealth = 5;
+    uint8_t health;
+    uint8_t maxHealth = 5;
     Vector2 velocity = {0, 0};
     float spottingRange = 300; // From how far away enemies can spot the player
     float gravity = 0.6f;

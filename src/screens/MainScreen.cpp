@@ -1,7 +1,7 @@
 #include "screens/MainScreen.h"
+#include "raylib.h"
 #include "services/AudioService.h"
 #include "services/StateService.h"
-#include "raylib.h"
 #include "services/InputService.h"
 
 MainScreen::MainScreen()
@@ -60,7 +60,7 @@ void MainScreen::mouseLogic()
         Vector2 pos = buttons[i].getPosition();
         Rectangle rect = {pos.x, pos.y, dim.x, dim.y};
 
-        Vector2 mousePos = GetMousePosition();
+        Vector2 mousePos = InputService::getInstance().getMousePos();
         // mousePos.x >= rect.x && mousePos.x <= (rect.x+rect.width) &&
         if ((mousePos.x + textPadding) >= rect.x && mousePos.x <= (rect.x + rect.width + textPadding) && (mousePos.y + textPadding) >= rect.y && mousePos.y <= (rect.y + rect.height + textPadding))
         {

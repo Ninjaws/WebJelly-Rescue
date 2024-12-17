@@ -1,16 +1,17 @@
 #ifndef STATE_SERVICE_H
 #define STATE_SERVICE_H
 
-#include <iostream>
-#include <memory>
-#include "services/Service.h"
-#include "screens/Screen.h"
-#include "enums/EScreen.h"
 #include "raylib.h"
+#include "enums/EScreen.h"
+#include "services/Service.h"
+#include "services/InputService.h"
+#include "screens/Screen.h"
+#include <memory>
 
 #if defined(PLATFORM_WEB)
 #include <emscripten/emscripten.h>
 #endif
+// #include <emscripten/html5.h>
 
 /**
  * Handles switching between screens
@@ -34,14 +35,10 @@ public:
     void startGame();
     static void staticStep()
     {
-        if (IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-        {
-            std::cout << "Input!" << std::endl;
-        }
         // Access the singleton instance and call step
         getInstance().step();
     }
-
+    
 private:
     std::unique_ptr<Screen> currentScreen;
     bool gameRunning = true;
@@ -52,6 +49,7 @@ private:
      */
     void step();
     void handleMusic();
+
 };
 
 #endif

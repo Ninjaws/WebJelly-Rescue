@@ -3,6 +3,7 @@
 #include "services/GameService.h"
 #include "services/CollectableService.h"
 #include "services/InputService.h"
+#include "services/MapService.h"
 
 void Player::applyGravity()
 {
@@ -171,7 +172,7 @@ void Player::consumableCollision()
             {
                 healthPack.setPickedUp(true);
                 AssetService::getInstance().playSound(ESound::HEAL_PICKUP);
-                health = std::max(health + healthPack.getHealAmount(), (int)max_health);
+                health = std::min(health + healthPack.getHealAmount(), (int)max_health);
             }
         }
     }
@@ -188,8 +189,6 @@ void Player::consumableCollision()
             AssetService::getInstance().playSound(ESound::POWERUP);
             jumpPower += powerup.getExtraJumpPower();
             gainedPowerup = true;
-            // health = std::max(health+powerup.getHealAmount(),(int)max_health);
-            // }
         }
     }
 
@@ -200,6 +199,7 @@ void Player::consumableCollision()
         this->texture.getPosition().y < flag.getObject().getPosition().y + flag.getObject().getSize().y)
     {
         flag.setTouched(true);
+        finishReached = true;
     }
 }
 

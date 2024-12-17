@@ -1,8 +1,8 @@
 #ifndef INPUT_SERVICE_H
 #define INPUT_SERVICE_H
 
-#include "Service.h"
 #include "raylib.h"
+#include "Service.h"
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
@@ -69,6 +69,14 @@ public:
         }
     }
 
+    void checkMousePos() {
+      this->mousePosition = GetMousePosition();
+    }
+
+    Vector2 getMousePos() {
+        return this->mousePosition;
+    }
+
     bool isKeyPressed(KeyboardKey key)
     {
         return keysPressed[key];
@@ -88,6 +96,7 @@ public:
     }
 
 private:
+    Vector2 mousePosition {0,0};
     std::unordered_set<KeyboardKey> watchedKeys;
     std::unordered_map<KeyboardKey, bool> keysPressed;
     std::unordered_map<KeyboardKey, bool> keysDown;

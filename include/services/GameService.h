@@ -4,6 +4,7 @@
 #include "raylib.h"
 #include "services/Service.h"
 #include "services/AudioService.h"
+#include "services/InputService.h"
 #include <vector>
 #include <list>
 
@@ -49,7 +50,8 @@ public:
 
     Vector2 getMouseWorldPos()
     {
-        Vector2 mouseWorldPos = {GetMousePosition().x + camera.target.x - camera.offset.x, GetMousePosition().y};
+        Vector2 mouseWorldPos = {InputService::getInstance().getMousePos().x + camera.target.x - camera.offset.x, 
+                                 InputService::getInstance().getMousePos().y};
         return mouseWorldPos;
     }
 

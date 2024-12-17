@@ -1,8 +1,7 @@
 #include "screens/TutorialScreen.h"
-
-#include "services/StateService.h"
-#include "enums/EFont.h"
 #include "enums/EScreen.h"
+#include "enums/EFont.h"
+#include "services/StateService.h"
 #include "services/InputService.h"
 
 TutorialScreen::TutorialScreen() {

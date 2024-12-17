@@ -1,5 +1,4 @@
 #include "services/AssetService.h"
-#include <iostream>
 AssetService::AssetService()
 {
     setAssetDir("assets/");

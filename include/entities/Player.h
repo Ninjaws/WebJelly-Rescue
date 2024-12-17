@@ -81,6 +81,10 @@ public:
 		this->health = std::max(health - damage, 0);
 	}
 
+	bool isFinishReached() {
+		return this->finishReached;
+	}
+
 protected:
 private:
 	TextureWrapper texture;
@@ -113,6 +117,7 @@ private:
 	uint8_t health;			 // Current health of the player
 	uint8_t max_health = 10; // Max health of the player
 	bool gainedPowerup = false;
+	bool finishReached = false;
 
 	void applyGravity();
 	void movement();

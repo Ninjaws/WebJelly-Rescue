@@ -3,7 +3,6 @@
 #include "services/StateService.h"
 #include "enums/EFont.h"
 #include "services/AudioService.h"
-#include <iostream>
 #include "services/InputService.h"
 
 TitleScreen::TitleScreen()
@@ -34,7 +33,6 @@ TitleScreen::TitleScreen()
 
 void TitleScreen::logic()
 {
-        // std::cout << "Next screen!" << std::endl;
     if (InputService::getInstance().isKeyPressed(KEY_ENTER) || InputService::getInstance().isMouseButtonPressed(MOUSE_BUTTON_LEFT))
     {
         StateService::getInstance().setScreen(EScreen::MAIN);

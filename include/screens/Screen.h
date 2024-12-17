@@ -5,7 +5,8 @@ class Screen
 {
 public:
     Screen(){}
-    ~Screen() {}
+    ~Screen() {
+    }
 
     /**
      * Execute all logic for this frame

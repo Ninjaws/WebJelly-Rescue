@@ -4,6 +4,7 @@
 #include "raylib.h"
 #include "services/AssetService.h"
 #include "entities/TextureWrapper.h"
+#include <cstdint>
 
 class Powerup {
     public:
@@ -40,8 +41,8 @@ class Powerup {
         bool pickedUp = false;           // When the player has picked up the pack  
         float animationDelay = 0.08f;    // How long to wait in between animation frames (in seconds)
         double lastFrame;                // Time since the last frame
-        u_int8_t currentFrame = 0;       // Current frame of the animation
-        u_int8_t amountOfFrames = 8;     // Total amount of animation frames
+        uint8_t currentFrame = 0;       // Current frame of the animation
+        uint8_t amountOfFrames = 8;     // Total amount of animation frames
 
         void animate() {
             if(GetTime() - lastFrame > animationDelay) {

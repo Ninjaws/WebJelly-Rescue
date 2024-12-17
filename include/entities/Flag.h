@@ -20,10 +20,10 @@ public:
 
     void logic()
     {
-        if (touched)
-        {
-            StateService::getInstance().setScreen(EScreen::VICTORY);
-        }
+        // if (touched)
+        // {
+        //     // StateService::getInstance().setScreen(EScreen::VICTORY);
+        // }
     }
 
     void draw()

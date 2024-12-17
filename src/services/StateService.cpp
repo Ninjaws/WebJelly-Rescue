@@ -49,17 +49,9 @@ void StateService::startGame()
     // InitWindow(640,544, "Jelly Rescue");
     InitWindow(screenSize.x, screenSize.y, "Jelly Rescue");
     SetTargetFPS(45);
+    #if not defined(PLATFORM_WEB)
     HideCursor();
-
-    // #if defined(PLATFORM_WEB)
-    //  emscripten_set_keypress_callback(EMSCRIPTEN_EVENT_TARGET_CANVAS, nullptr, 1, staticStep);
-    //  #endif
-
-    // #if defined(PLATFORM_WEB)
-    //     emscripten_set_focusin_callback(EMSCRIPTEN_EVENT_TARGET_CANVAS, nullptr, 1, [](const EmscriptenFocusEvent* event) {
-    //     std::cout << "Canvas Focused!" << std::endl;
-    // });
-    // #endif
+    #endif
 
     setScreen(EScreen::TITLE);
 
@@ -67,7 +59,6 @@ void StateService::startGame()
     emscripten_set_main_loop(StateService::staticStep, 0, 1);
 #else
 
-    // while (!WindowShouldClose() && instance->gameRunning)
     while (!WindowShouldClose() && gameRunning)
     {
         step();
@@ -90,6 +81,7 @@ void StateService::handleMusic()
 void StateService::step()
 {
     InputService::getInstance().checkKeys();
+    InputService::getInstance().checkMousePos();
 
     handleMusic();
     currentScreen->draw();
