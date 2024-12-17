@@ -2,7 +2,6 @@
 #define JELLY_H
 
 #include "raylib.h"
-#include "services/MapService.h"
 #include "services/AssetService.h"
 #include "entities/TextureWrapper.h"
 

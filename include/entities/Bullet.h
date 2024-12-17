@@ -2,11 +2,9 @@
 #define BULLET_H
 
 #include "raylib.h"
-#include <cmath>
 #include "entities/TextureWrapper.h"
 #include "entities/Vector2i.h"
-#include "services/MapService.h"
-#include <iostream>
+#include <cmath>
 
 class Bullet
 {
@@ -17,8 +15,6 @@ public:
         this->position = pos;
         this->direction = direction;
     }
-
-    // ~Bullet() {}
 
     void logic()
     {
@@ -31,7 +27,7 @@ public:
 
     void draw()
     {
-        DrawCircleGradient(position.x, position.y, size, color, BLUE);
+        DrawCircleGradient(position.x, position.y, size, color, BLACK);
     }
 
     bool getHasCollided()
@@ -46,37 +42,16 @@ protected:
     bool hasCollided = false;
 
 private:
-    // TextureWrapper object;
     float direction;
     float velocity = 15.0f;
 
     void move()
     {
-        // float directionInRadians = this->direction * M_PI / 180.0f;
         position.x += velocity * cos(direction);
         position.y += velocity * sin(direction);
     }
-    void envCollision()
-    {
-        if (position.x < 0 || position.y < 0 || position.y > GetScreenHeight())
-        {
-            hasCollided = true;
-            return;
-        }
-
-        const int tileSize = MapService::getInstance().getMap().getTileSize();
-        Vector2i tilePos = Vector2i((int)this->position.x / tileSize, (int)this->position.y / tileSize);
-        if (MapService::getInstance().getMap().getColMap()[tilePos.y][tilePos.x] == 1)
-        {
-            hasCollided = true;
-            return;
-        }
-    }
+    void envCollision();
     virtual void objCollision() = 0;
-
-    // void handleCollision() {
-
-    // }
 };
 
 #endif

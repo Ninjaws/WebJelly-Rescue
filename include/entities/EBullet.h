@@ -1,20 +1,22 @@
-// #ifndef EBULLET_H
-// #define EBULLET_H
+#ifndef EBULLET_H
+#define EBULLET_H
 
-// #include "Bullet.h"
-// #include <iostream>
+#include "services/AssetService.h"
+#include "entities/Bullet.h"
+#include <cstdint>
 
-// class EBullet : public Bullet {
-// public:
+class EBullet : public Bullet
+{
+public:
+    EBullet() {}
+    EBullet(Vector2 pos, float angle) : Bullet(pos, angle)
+    {
+        this->color = RED;
+    }
 
-//     EBullet() {}
-//     ~EBullet() {}
+private:
+    uint8_t damage = 1;
+    void objCollision() override;
+};
 
-//     void detectCollision() override {
-//         std::cout << "Enemy bullets" << std::endl;
-//     }
-// private:
-
-// };
-
-// #endif
+#endif

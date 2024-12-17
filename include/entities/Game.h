@@ -10,10 +10,9 @@
 #include "services/GameService.h"
 #include "services/CollectableService.h"
 #include "services/EnemyService.h"
-#include "entities/Player.h"
+#include "services/PlayerService.h"
+#include "services/BulletService.h"
 #include "entities/Text.h"
-#include "entities/Bullet.h"
-#include "entities/PBullet.h"
 #include <sstream>
 
 class Game
@@ -44,10 +43,9 @@ public:
         camera.target = (Vector2){screenSize.x / 2.0f, screenSize.y / 2.0f}; // Initially at the center of the world
         camera.rotation = 0.0f;
         camera.zoom = 1.0f;
-        // this->camera = camera;
         GameService::getInstance().setCamera(camera);
-        this->player = Player();
-        this->player.setPosition({200, 350});
+        BulletService::getInstance().initBullets();
+        PlayerService::getInstance().initPlayer();
         this->crosshair = TextureWrapper(AssetService::getInstance().getSprite(ESprite::CROSSHAIR), {15, 15}, {0, 0}, {0, 0, 15, 15});
 
         CollectableService::getInstance().initCollectables();
@@ -84,20 +82,19 @@ public:
         if (InputService::getInstance().isKeyPressed(KEY_ENTER))
         {
             GameService::getInstance().setPaused(true);
-            AudioService::getInstance().pauseMusic();
             return;
         }
 
-        GameService::getInstance().bulletLogic();
+        BulletService::getInstance().bulletLogic();
         CollectableService::getInstance().collectableLogic();
-
         EnemyService::getInstance().enemyLogic();
 
-        this->player.logic();
-        if (this->player.getTexture().getPosition().x > (StateService::getInstance().getScreenSize().x / 2.0f) &&
-            this->player.getTexture().getPosition().x + (StateService::getInstance().getScreenSize().x / 2.0f) < background.getBackgroundSize().x)
+        auto& player = PlayerService::getInstance().getPlayer();
+        player.logic();
+        if (player.getTexture().getPosition().x > (StateService::getInstance().getScreenSize().x / 2.0f) &&
+            player.getTexture().getPosition().x + (StateService::getInstance().getScreenSize().x / 2.0f) < background.getBackgroundSize().x)
         {
-            GameService::getInstance().getCamera().offset = {(StateService::getInstance().getScreenSize().x / 2.0f) + ((StateService::getInstance().getScreenSize().x / 2.0f) - this->player.getTexture().getPosition().x), StateService::getInstance().getScreenSize().y / 2.0f};
+            GameService::getInstance().getCamera().offset = {(StateService::getInstance().getScreenSize().x / 2.0f) + ((StateService::getInstance().getScreenSize().x / 2.0f) - player.getTexture().getPosition().x), StateService::getInstance().getScreenSize().y / 2.0f};
         }
     }
 
@@ -108,16 +105,11 @@ public:
 
         this->background.draw();
 
-        // std::vector<PBullet> pbs = GameService::getInstance().getPlayerBullets();
-        // for (int i = 0; i < GameService::getInstance().getPlayerBullets().size(); i++)
-        // {
-        //     GameService::getInstance().getPlayerBullets()[i].draw();
-        // }
-        GameService::getInstance().drawBullets();
+        BulletService::getInstance().drawBullets();
         this->map.draw();
         CollectableService::getInstance().drawCollectables();
         EnemyService::getInstance().drawEnemies();
-        this->player.draw();
+        PlayerService::getInstance().getPlayer().draw();
 
         EndMode2D();
 
@@ -137,7 +129,6 @@ public:
 private:
     Background background;
     Map map;
-    Player player;
     TextureWrapper crosshair;
     std::vector<Enemy> enemies;
 
@@ -314,7 +305,7 @@ private:
         Vector2i pixel_pos = Vector2i(5, 40);
         Texture2D ammoSprite = AssetService::getInstance().getSprite(ESprite::HUD_AMMO);
         Vector2i display_pos;
-        for (int i = 0; i < this->player.getAmmo(); i++)
+        for (int i = 0; i < PlayerService::getInstance().getPlayer().getAmmo(); i++)
         {
             if (i <= 49)
             {
@@ -346,13 +337,13 @@ private:
         Texture2D noHealthSprite = AssetService::getInstance().getSprite(ESprite::HUD_HEART_EMPTY);
         Texture2D healthSprite = AssetService::getInstance().getSprite(ESprite::HUD_HEART);
         // sVector2f coord_pos = GetWindow().mapPixelToCoords(pixel_pos);
-        for (int i = 0; i < this->player.getMaxHealth(); i++)
+        for (int i = 0; i < PlayerService::getInstance().getPlayer().getMaxHealth(); i++)
         {
             Vector2i pos = Vector2i(pixel_pos.x + noHealthSprite.width * i, pixel_pos.y);
             // noHealthSprite[i].setPosition(coord_pos.x + noHealthTexture.getSize().x * i, coord_pos.y);
             DrawTexture(noHealthSprite, pos.x, pos.y, WHITE);
         }
-        for (int i = 0; i < this->player.getHealth(); i++)
+        for (int i = 0; i < PlayerService::getInstance().getPlayer().getHealth(); i++)
         {
             // healthSprite[i].setPosition(coord_pos.x + healthTexture.getSize().x * i, coord_pos.y);
             // DrawTexture(ammoSprite, display_pos.x, display_pos.y, WHITE);

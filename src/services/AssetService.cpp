@@ -31,6 +31,7 @@ void AssetService::setAssets()
     sounds[ESound::VICTORY] = loadSound("Audio/Sounds/victorySound.wav");
     sounds[ESound::PLAYER_DAMAGE] = loadSound("Audio/Sounds/WaterBalloon.wav");
     sounds[ESound::ENEMY_DEFEATED] = loadSound("Audio/Sounds/pain.wav");
+    sounds[ESound::PLAYER_SPOTTED] = loadSound("Audio/Sounds/playerSpotted.wav");
 
     backgrounds[EBackground::TUTORIAL] = loadTexture("Textures/TutorialBackground2.png");
     backgrounds[EBackground::GAME1] = loadTexture("Textures/GameBackground_1.png");

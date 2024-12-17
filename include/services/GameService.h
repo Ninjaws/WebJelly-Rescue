@@ -1,9 +1,9 @@
 #ifndef GAME_SERVICE_H
 #define GAME_SERVICE_H
 
+#include "raylib.h"
 #include "services/Service.h"
-#include "entities/Game.h"
-#include "entities/PBullet.h"
+#include "services/AudioService.h"
 #include <vector>
 #include <list>
 
@@ -23,12 +23,20 @@ public:
     void setPaused(bool paused)
     {
         this->paused = paused;
+        if (this->paused)
+            AudioService::getInstance().pauseMusic();
     }
 
     void setGameOver(bool gameOver)
     {
         this->gameOver = gameOver;
+        if (this->gameOver)
+        {
+            AudioService::getInstance().setMusic(EMusic::GAME_OVER);
+            AudioService::getInstance().playMusic();
+        }
     }
+
     void setCamera(Camera2D camera)
     {
         this->camera = camera;
@@ -39,44 +47,16 @@ public:
         return this->camera;
     }
 
-    /**
-     * Returns the position of the mouse in world coordinates
-     */
     Vector2 getMouseWorldPos()
     {
         Vector2 mouseWorldPos = {GetMousePosition().x + camera.target.x - camera.offset.x, GetMousePosition().y};
         return mouseWorldPos;
     }
 
-    Vector2 toWorldPos(Vector2i pixelPos) {
-      Vector2 worldPos = {(float)pixelPos.x + camera.target.x - camera.offset.x, (float)pixelPos.y};
-        return worldPos;  
-    }
-
-    void addPlayerBullet(PBullet bullet)
+    Vector2 toWorldPos(Vector2i pixelPos)
     {
-        this->playerBullets.push_back(bullet);
-    }
-
-    void bulletLogic()
-    {
-        for (auto it = this->playerBullets.begin(); it != this->playerBullets.end();)
-        {
-            it->logic();
-            if (it->getHasCollided())
-                it = this->playerBullets.erase(it);
-            else
-                ++it;
-        }
-    }
-
-    void drawBullets()
-    {
-       for (auto it = this->playerBullets.begin(); it != this->playerBullets.end();)
-        {
-            it->draw();
-            ++it;
-        }
+        Vector2 worldPos = {(float)pixelPos.x + camera.target.x - camera.offset.x, (float)pixelPos.y};
+        return worldPos;
     }
 
     void resetGame()
@@ -90,8 +70,6 @@ private:
     bool paused = false;
     bool gameOver = false;
     Camera2D camera;
-
-    std::list<PBullet> playerBullets;
 };
 
 #endif

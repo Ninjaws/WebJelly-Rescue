@@ -11,7 +11,8 @@ enum class ESound {
     POWERUP,
     PLAYER_DAMAGE,
     ENEMY_DEFEATED,
-    VICTORY
+    VICTORY,
+    PLAYER_SPOTTED
 };
 
 #endif
