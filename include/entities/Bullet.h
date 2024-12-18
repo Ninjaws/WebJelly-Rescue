@@ -27,7 +27,7 @@ public:
 
     void draw()
     {
-        DrawCircleGradient(position.x, position.y, size, color, BLACK);
+        DrawCircleGradient(position.x, position.y, size, color, ORANGE);
     }
 
     bool getHasCollided()

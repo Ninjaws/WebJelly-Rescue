@@ -55,6 +55,10 @@
         "format": "cpp",
         "text_encoding": "cpp",
         "ratio": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "__verbose_abort": "cpp",
+        "cfenv": "cpp",
+        "cstring": "cpp",
+        "fstream": "cpp"
     }
 }

@@ -2,6 +2,7 @@
 #include "services/PlayerService.h"
 #include "services/MapService.h"
 #include "services/BulletService.h"
+#include <cmath>
 
 void Enemy::logic()
 {
@@ -74,10 +75,10 @@ std::vector<Vector2i> Enemy::getCorners()
     int tileSize = MapService::getInstance().getMap().getTileSize();
     // Vector2i leftTop(Vector2i((int)left / tileSize, (int)(top + 5) / tileSize));
     // Vector2i leftBottom(Vector2i((int)left / tileSize, (int)(bottom - 5) / tileSize));
-    Vector2i leftCenter = Vector2i((int)left / tileSize, (int)(bottom - texture.getSize().y / 2.0) / tileSize);
+    Vector2i leftCenter = Vector2i((int)(left -(spriteAnimation.y == Left ? gunLeft.getSize().x*(2.0f/3.0f) : 0.0f)) / tileSize, (int)(bottom - texture.getSize().y / 2.0) / tileSize);
     // Vector2i rightTop(Vector2i((int)right / tileSize, (int)(top + 5) / tileSize));
     // Vector2i rightBottom(Vector2i((int)right / tileSize, (int)(bottom - 5) / tileSize));
-    Vector2i rightCenter = Vector2i((int)right / tileSize, (int)(bottom - texture.getSize().y / 2.0) / tileSize);
+    Vector2i rightCenter = Vector2i((int)(right+ (spriteAnimation.y == Right ? gunRight.getSize().x*(2.0f/3.0f) : 0.0f)) / tileSize, (int)(bottom - texture.getSize().y / 2.0) / tileSize);
 
     Vector2i bottomLeft(Vector2i((int)(left + 5) / tileSize, (int)bottom / tileSize));   // +5 to separate bottom from side
     Vector2i bottomRight(Vector2i((int)(right - 5) / tileSize, (int)bottom / tileSize)); // -5 to separate bottom from side
@@ -158,15 +159,29 @@ void Enemy::detectPlayer()
     if (this->health > 0)
     {
         bool spotted = false;
+        Vector2 playerCenter = {player.getTexture().getPosition().x + player.getTexture().getSize().x / 2.0f, player.getTexture().getPosition().y + player.getTexture().getSize().y / 2.0f};
+        Vector2 enemyCenter = {texture.getPosition().x + texture.getSize().x / 2.0f, texture.getPosition().y + texture.getSize().y / 2.0f};
         if (this->spriteAnimation.y == Left && this->texture.getPosition().x - player.getTexture().getPosition().x <= spottingRange &&
             this->texture.getPosition().x - player.getTexture().getPosition().x > 55 && this->texture.getPosition().y + this->texture.getSize().y >= player.getTexture().getPosition().y)
         {
             spotted = true;
+            float gunRotationLeft = atan2(playerCenter.y - enemyCenter.y,
+                                          enemyCenter.x - playerCenter.x);
+            float target = -gunRotationLeft * 180 / M_PI;
+            //   float delta = target - this->gunLeft.getRotation();
+            //   float sign = std::copysign(1.0f, delta);
+            this->gunLeft.setRotation(std::min(this->gunLeft.getRotation() + aimSpeed, target));
         }
         else if (spriteAnimation.y == Right && player.getTexture().getPosition().x - this->texture.getPosition().x <= spottingRange &&
                  player.getTexture().getPosition().x - this->texture.getPosition().x > 55 && this->texture.getPosition().y + this->texture.getSize().y >= player.getTexture().getPosition().y)
         {
             spotted = true;
+            float gunRotationRight = atan2(playerCenter.y - enemyCenter.y,
+                                           playerCenter.x - enemyCenter.x);
+            float target = gunRotationRight * 180 / M_PI;
+
+            // this->gunRight.setRotation(gunRotationRight * 180 / M_PI);
+            this->gunRight.setRotation(std::max(this->gunRight.getRotation() - aimSpeed, target));
         }
 
         /** Don't set it again if the detection continues */
@@ -179,6 +194,9 @@ void Enemy::detectPlayer()
         else if (!spotted)
         {
             this->playerSpotted = false;
+            /** Slowly ease the gun back to default position */
+            this->gunLeft.setRotation(std::max(this->gunLeft.getRotation() - aimSpeed/2.0f, 0.0f));
+            this->gunRight.setRotation(std::min(this->gunRight.getRotation() + aimSpeed/2.0f, 0.0f));
         }
     }
 }
@@ -189,25 +207,57 @@ void Enemy::shoot()
     /** Stop shooting if the player is dead (and falling out of the map) */
     if (player.getHealth() > 0 && playerSpotted && GetTime() - this->lastShot >= (1 / this->shotsPerSecond))
     {
+
         this->lastShot = GetTime();
         // Play shooting sound
         AssetService::getInstance().playSound(ESound::SHOOT);
 
-        if ((player.getTexture().getPosition().x > this->texture.getPosition().x + this->gunLeft.getSize().x && spriteAnimation.y == Right) ||
-            (player.getTexture().getPosition().x + (this->gunLeft.getSize().x / 2) < this->texture.getPosition().x && spriteAnimation.y == Left))
-        {
+        float offsetDistance = this->gunLeft.getSize().x - this->gunLeft.getSize().x / 3;
+        Vector2 playerCenter = {player.getTexture().getPosition().x + player.getTexture().getSize().x / 2.0f, player.getTexture().getPosition().y + player.getTexture().getSize().y / 2.0f};
+        Vector2 enemyCenter = {texture.getPosition().x + texture.getSize().x / 2.0f, texture.getPosition().y + texture.getSize().y / 2.0f};
+       
 
-            float angleShot = atan2(player.getTexture().getPosition().y - (this->texture.getPosition().y + this->texture.getSize().y / 2.0),
-                                    player.getTexture().getPosition().x - (this->texture.getPosition().x + this->texture.getSize().x / 2.0));
+        // if (spriteAnimation.y == Left)
+        // {
 
-            /** Making the bullet originate from the gun's mouth */
-            float offsetDistance = this->gunLeft.getSize().x - this->gunLeft.getSize().x / 3;
+            float angleShot = atan2(playerCenter.y - enemyCenter.y,
+                                    playerCenter.x - enemyCenter.x);
+
+            // float gunRotationRadians = this->gunLeft.getRotation() * (M_PI / 180.0f); // Convert degrees to radians
             float offsetX = cos(angleShot) * offsetDistance;
             float offsetY = sin(angleShot) * offsetDistance;
             Vector2 bulletStartLocation = {this->texture.getPosition().x + this->texture.getSize().x / 2.0f + offsetX,
                                            this->texture.getPosition().y + this->texture.getSize().y / 2.0f + offsetY};
 
             BulletService::getInstance().addEnemyBullet(bulletStartLocation, angleShot);
-        }
+        // }
+
+        // if ((player.getTexture().getPosition().x > this->texture.getPosition().x + this->gunLeft.getSize().x && spriteAnimation.y == Right) ||
+        //     (player.getTexture().getPosition().x + (this->gunLeft.getSize().x / 2) < this->texture.getPosition().x && spriteAnimation.y == Left))
+        // {
+
+        //     // float gunRotationRight = atan2(GameService::getInstance().getMouseWorldPos().y - (this->texture.getPosition().y + this->texture.getSize().y / 2.0),
+        //     //                                GameService::getInstance().getMouseWorldPos().x - (this->texture.getPosition().x + this->texture.getSize().x / 2.0));
+        //     // this->gunRight.setRotation(gunRotationRight * 180 / M_PI);
+
+        //     float angleShot = atan2(player.getTexture().getPosition().y - (this->texture.getPosition().y + this->texture.getSize().y / 2.0),
+        //                             player.getTexture().getPosition().x - (this->texture.getPosition().x + this->texture.getSize().x / 2.0));
+
+        //     // this->gunRight.setRotation(angleShot * 180 / M_PI);
+        //     // this->gunLeft.setRotation(-angleShot * 180 / M_PI);
+        //     /** Making the bullet originate from the gun's mouth */
+        //     float offsetDistance = this->gunLeft.getSize().x - this->gunLeft.getSize().x / 3;
+        //     float offsetX = cos(angleShot) * offsetDistance;
+        //     float offsetY = sin(angleShot) * offsetDistance;
+        //     Vector2 bulletStartLocation = {this->texture.getPosition().x + this->texture.getSize().x / 2.0f + offsetX,
+        //                                    this->texture.getPosition().y + this->texture.getSize().y / 2.0f + offsetY};
+
+        //     // BulletService::getInstance().addEnemyBullet(bulletStartLocation, angleShot);
+        // }
+        // else
+        // {
+        //     // this->gunRight.setRotation(0);
+        //     // this->gunLeft.setRotation(0);
+        // }
     }
 }

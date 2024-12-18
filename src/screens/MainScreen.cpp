@@ -6,9 +6,16 @@
 
 MainScreen::MainScreen()
 {
+#if defined(PLATFORM_WEB)
+    const int TOP_GAP = 100;
+    const int BOTTOM_GAP = 100;
+    const int AMNT_OF_BUTTONS = 2;
+#else
     const int TOP_GAP = 100;
     const int BOTTOM_GAP = 50;
     const int AMNT_OF_BUTTONS = 4;
+#endif
+
     const int TOTAL_SPACE = GetScreenHeight() - (TOP_GAP + BOTTOM_GAP);
     const int SPACE_PER_ITEM = TOTAL_SPACE / AMNT_OF_BUTTONS;
 
@@ -18,13 +25,22 @@ MainScreen::MainScreen()
         buttons.push_back(txt);
     }
     buttons[0].setColor(RED);
+#if defined(PLATFORM_WEB)
+    buttons[1].setText("tutorial");
+#else
     buttons[1].setText("load game");
     buttons[2].setText("tutorial");
     buttons[3].setText("quit");
+#endif
 
     for (int i = 0; i < AMNT_OF_BUTTONS; i++)
     {
+#if defined(PLATFORM_WEB)
+        buttons[i].setPosition({(float)(GetScreenWidth() - buttons[i].getDimensions().x) / 2.0f, (float)TOP_GAP + SPACE_PER_ITEM * i + SPACE_PER_ITEM / 2.0f});
+
+#else
         buttons[i].setPosition({(float)(GetScreenWidth() - buttons[i].getDimensions().x) / 2.0f, (float)TOP_GAP + SPACE_PER_ITEM * i});
+#endif
     }
 
     /** Will be ignored if already active (like when coming from the TitleScreen) */
@@ -44,7 +60,6 @@ void MainScreen::logic()
 
     clickLogic();
 }
-
 
 void MainScreen::mouseLogic()
 {
@@ -78,7 +93,7 @@ void MainScreen::keyboardLogic()
     {
         buttons[hoveredButton].setColor(WHITE);
         /** Move up or down depending on the pressed button. +4 is used so that -1 becomes 3 (the last button) */
-        hoveredButton = ((hoveredButton - (InputService::getInstance().isKeyPressed(KEY_S) ? -1 : 1)) + 4) % 4;
+        hoveredButton = ((hoveredButton - (InputService::getInstance().isKeyPressed(KEY_S) ? -1 : 1)) + buttons.size()) % buttons.size();
         buttons[hoveredButton].setColor(RED);
     }
 }

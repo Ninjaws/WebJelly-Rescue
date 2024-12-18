@@ -82,6 +82,7 @@ private:
     float shotsPerSecond = 8.0f;
     double lastShot;
     bool playerSpotted = false;
+    float aimSpeed = 2.0f; // How quickly the enemy can angle its gun to match the player (and to return to default)
 
     void walk();
     void checkForCollision();

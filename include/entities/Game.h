@@ -89,14 +89,15 @@ public:
         CollectableService::getInstance().collectableLogic();
         EnemyService::getInstance().enemyLogic();
 
-        auto& player = PlayerService::getInstance().getPlayer();
+        auto &player = PlayerService::getInstance().getPlayer();
         player.logic();
         if (player.getTexture().getPosition().x > (StateService::getInstance().getScreenSize().x / 2.0f) &&
             player.getTexture().getPosition().x + (StateService::getInstance().getScreenSize().x / 2.0f) < background.getBackgroundSize().x)
         {
             GameService::getInstance().getCamera().offset = {(StateService::getInstance().getScreenSize().x / 2.0f) + ((StateService::getInstance().getScreenSize().x / 2.0f) - player.getTexture().getPosition().x), StateService::getInstance().getScreenSize().y / 2.0f};
         }
-        if(player.isFinishReached()) {
+        if (player.isFinishReached())
+        {
             StateService::getInstance().setScreen(EScreen::VICTORY);
         }
     }
@@ -124,7 +125,9 @@ public:
         else if (GameService::getInstance().isGameOver())
         {
             drawGameOver();
-        } else {
+        }
+        else
+        {
             drawCrosshair();
         }
         EndDrawing();
@@ -154,9 +157,16 @@ private:
 
     void initPauseScreen()
     {
+#if defined(PLATFORM_WEB)
+        const int TOP_GAP = 100;
+        const int BOTTOM_GAP = 100;
+        const int AMNT_OF_BUTTONS = 2;
+#else
         const int TOP_GAP = 100;
         const int BOTTOM_GAP = 50;
         const int AMNT_OF_BUTTONS = 4;
+#endif
+
         const int TOTAL_SPACE = GetScreenHeight() - (TOP_GAP + BOTTOM_GAP);
         const int SPACE_PER_ITEM = TOTAL_SPACE / AMNT_OF_BUTTONS;
 
@@ -166,13 +176,24 @@ private:
             pauseScreenButtons.push_back(txt);
         }
         pauseScreenButtons[0].setColor(RED);
+
+#if defined(PLATFORM_WEB)
+        pauseScreenButtons[1].setText("Quit to Main Menu");
+#else
         pauseScreenButtons[1].setText("Save Game");
         pauseScreenButtons[2].setText("Quit to Main Menu");
         pauseScreenButtons[3].setText("Quit to Desktop");
+#endif
 
         for (int i = 0; i < AMNT_OF_BUTTONS; i++)
         {
+#if defined(PLATFORM_WEB)
+            pauseScreenButtons[i].setPosition({(float)(GetScreenWidth() - pauseScreenButtons[i].getDimensions().x) / 2.0f, (float)TOP_GAP + SPACE_PER_ITEM * i + SPACE_PER_ITEM / 2.0f});
+
+#else
             pauseScreenButtons[i].setPosition({(float)(GetScreenWidth() - pauseScreenButtons[i].getDimensions().x) / 2.0f, (float)TOP_GAP + SPACE_PER_ITEM * i});
+
+#endif
         }
     }
 
