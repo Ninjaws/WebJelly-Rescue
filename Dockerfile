@@ -63,4 +63,39 @@ RUN cd libs/raylib/src && \
     emar rcs libraylib.a rcore.o rshapes.o rtextures.o rtext.o rmodels.o utils.o raudio.o && \
     cd ../..
 
-CMD ["bash"]
+# CMD ["bash"]
+
+FROM development as build
+
+RUN mkdir dist html src include assets
+
+COPY include include
+COPY src src
+COPY html html
+COPY assets assets
+
+# CMD ["tail", "-f", "/dev/null"]
+# Run the production build command to generate game.js and game.wasm
+RUN source /app/libs/emsdk/emsdk_env.sh && \
+    emcc $(find src/ -name "*.cpp") -o dist/game.js -O3 -Wno-missing-braces \
+    -I./include -I/app/libs/raylib/build/raylib/include \
+    -L/app/libs/raylib/src /app/libs/raylib/src/libraylib.a \
+    -s ALLOW_MEMORY_GROWTH=1 -s INITIAL_MEMORY=536870912 -s MAXIMUM_MEMORY=4294967296 \
+    -s --preload-file assets@/assets -s USE_GLFW=3 -s ASSERTIONS=2 -DPLATFORM_WEB
+
+# CMD ["tail", "-f", "/dev/null"]
+
+FROM nginx:alpine as production
+
+# Remove the default nginx index.html
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy the generated files from the production stage into the Nginx html directory
+COPY --from=build /app/dist/ /usr/share/nginx/html/
+COPY --from=build /app/html/index.html /usr/share/nginx/html/
+
+# Expose port 80 to allow Nginx to serve the files
+EXPOSE 80
+
+# Start Nginx server
+CMD ["nginx", "-g", "daemon off;"]

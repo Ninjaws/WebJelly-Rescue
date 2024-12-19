@@ -10,13 +10,13 @@ class Jelly
 public:
     Jelly(){
         this->texture = TextureWrapper(AssetService::getInstance().getSprite(ESprite::JELLY),{32,32});
-        AssetService::getInstance().playSound(ESound::JELLY_FREED);
+        // AssetService::getInstance().playSound(ESound::JELLY_FREED);
     }
     Jelly(Vector2 startPos)
     {
         this->startPosition = startPos;
         this->texture = TextureWrapper(AssetService::getInstance().getSprite(ESprite::JELLY),{32,32},startPos);
-        AssetService::getInstance().playSound(ESound::JELLY_FREED);
+        // AssetService::getInstance().playSound(ESound::JELLY_FREED);
     }
 
     void logic()

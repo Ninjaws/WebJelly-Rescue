@@ -11,6 +11,7 @@ void PBullet::objCollision()
                this->position.y + this->size > crate.getObject().getPosition().y && this->position.y-this->size < crate.getObject().getPosition().y + crate.getObject().getSize().y) {
                 crate.setHit(true);
                 AssetService::getInstance().playSound(ESound::CRATE_BREAK);
+                AssetService::getInstance().playSound(ESound::JELLY_FREED);
                 this->hasCollided = true;
             }
         }

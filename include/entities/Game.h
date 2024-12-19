@@ -14,6 +14,7 @@
 #include "services/BulletService.h"
 #include "entities/Text.h"
 #include <sstream>
+#include <iostream>
 
 class Game
 {
@@ -49,6 +50,7 @@ public:
         this->crosshair = TextureWrapper(AssetService::getInstance().getSprite(ESprite::CROSSHAIR), {15, 15}, {0, 0}, {0, 0, 15, 15});
 
         CollectableService::getInstance().initCollectables();
+        std::cout << "Initting" << std::endl;
 
         initHud();
         initPauseScreen();
