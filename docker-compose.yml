@@ -1,0 +1,13 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: jelly-rescue-prod
+    container_name: jelly-rescue-prod-cont
+    ports:
+      - "4600:80"
+    restart: always
+    cpu_period: 100000      # Default is 100,000 microseconds (100ms)
+    cpu_quota: 30000        # 5% of the total CPU time

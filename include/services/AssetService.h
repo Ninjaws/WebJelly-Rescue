@@ -10,6 +10,7 @@
 #include "enums/EBackground.h"
 #include "enums/EMap.h"
 #include "enums/ESprite.h"
+#include "enums/ESound.h"
 #include "services/Service.h"
 
 class AssetService: public Service<AssetService>
@@ -32,6 +33,10 @@ public:
         return this->sprites[sprite];
     }
 
+    void playSound(ESound sound) {
+     PlaySound(sounds[sound]);
+    }
+
 protected:
     AssetService();
 
@@ -41,7 +46,7 @@ private:
 
     std::string assetDir;
     std::unordered_map<EFont, std::string> fonts;
-    std::vector<Sound> sounds;
+    std::unordered_map<ESound, Sound> sounds;
     std::unordered_map<EMusic, Music> music;
     std::unordered_map<EBackground, Texture2D> backgrounds;
     std::unordered_map<EMap, std::string> maps;

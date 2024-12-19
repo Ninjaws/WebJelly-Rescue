@@ -1,14 +1,21 @@
 #include "screens/MainScreen.h"
+#include "raylib.h"
 #include "services/AudioService.h"
 #include "services/StateService.h"
-#include "raylib.h"
 #include "services/InputService.h"
 
 MainScreen::MainScreen()
 {
+#if defined(PLATFORM_WEB)
+    const int TOP_GAP = 100;
+    const int BOTTOM_GAP = 100;
+    const int AMNT_OF_BUTTONS = 2;
+#else
     const int TOP_GAP = 100;
     const int BOTTOM_GAP = 50;
     const int AMNT_OF_BUTTONS = 4;
+#endif
+
     const int TOTAL_SPACE = GetScreenHeight() - (TOP_GAP + BOTTOM_GAP);
     const int SPACE_PER_ITEM = TOTAL_SPACE / AMNT_OF_BUTTONS;
 
@@ -18,13 +25,22 @@ MainScreen::MainScreen()
         buttons.push_back(txt);
     }
     buttons[0].setColor(RED);
+#if defined(PLATFORM_WEB)
+    buttons[1].setText("tutorial");
+#else
     buttons[1].setText("load game");
     buttons[2].setText("tutorial");
     buttons[3].setText("quit");
+#endif
 
     for (int i = 0; i < AMNT_OF_BUTTONS; i++)
     {
+#if defined(PLATFORM_WEB)
+        buttons[i].setPosition({(float)(GetScreenWidth() - buttons[i].getDimensions().x) / 2.0f, (float)TOP_GAP + SPACE_PER_ITEM * i + SPACE_PER_ITEM / 2.0f});
+
+#else
         buttons[i].setPosition({(float)(GetScreenWidth() - buttons[i].getDimensions().x) / 2.0f, (float)TOP_GAP + SPACE_PER_ITEM * i});
+#endif
     }
 
     /** Will be ignored if already active (like when coming from the TitleScreen) */
@@ -35,23 +51,15 @@ MainScreen::MainScreen()
         AudioService::getInstance().playMusic();
     }
 
-    InputService::getInstance().setKeysToWatch({KEY_ENTER, KEY_UP, KEY_DOWN}, {MOUSE_BUTTON_LEFT});
+    InputService::getInstance().setKeysToWatch({KEY_ENTER, KEY_W, KEY_S}, {});
 }
 
 void MainScreen::logic()
 {
-    // Vector2 mouseD = GetMouseDelta();
-    // std::cout << mouseD.y <<std::endl;
-    // if (mouseD.x != 0.0f && mouseD.y != 0.0f)
-    // {
-    mouseLogic();
-    // }
-
     keyboardLogic();
 
     clickLogic();
 }
-
 
 void MainScreen::mouseLogic()
 {
@@ -67,7 +75,7 @@ void MainScreen::mouseLogic()
         Vector2 pos = buttons[i].getPosition();
         Rectangle rect = {pos.x, pos.y, dim.x, dim.y};
 
-        Vector2 mousePos = GetMousePosition();
+        Vector2 mousePos = InputService::getInstance().getMousePos();
         // mousePos.x >= rect.x && mousePos.x <= (rect.x+rect.width) &&
         if ((mousePos.x + textPadding) >= rect.x && mousePos.x <= (rect.x + rect.width + textPadding) && (mousePos.y + textPadding) >= rect.y && mousePos.y <= (rect.y + rect.height + textPadding))
         {
@@ -81,18 +89,18 @@ void MainScreen::mouseLogic()
 
 void MainScreen::keyboardLogic()
 {
-    if (InputService::getInstance().isKeyPressed(KEY_DOWN) || InputService::getInstance().isKeyPressed(KEY_UP))
+    if (InputService::getInstance().isKeyPressed(KEY_S) || InputService::getInstance().isKeyPressed(KEY_W))
     {
         buttons[hoveredButton].setColor(WHITE);
         /** Move up or down depending on the pressed button. +4 is used so that -1 becomes 3 (the last button) */
-        hoveredButton = ((hoveredButton - (InputService::getInstance().isKeyPressed(KEY_DOWN) ? -1 : 1)) + 4) % 4;
+        hoveredButton = ((hoveredButton - (InputService::getInstance().isKeyPressed(KEY_S) ? -1 : 1)) + buttons.size()) % buttons.size();
         buttons[hoveredButton].setColor(RED);
     }
 }
 
 void MainScreen::clickLogic()
 {
-    if (InputService::getInstance().isKeyPressed(KEY_ENTER) || InputService::getInstance().isMouseButtonPressed(MOUSE_BUTTON_LEFT))
+    if (InputService::getInstance().isKeyPressed(KEY_ENTER))
     {
         std::string selectedButton = buttons[hoveredButton].getText();
 

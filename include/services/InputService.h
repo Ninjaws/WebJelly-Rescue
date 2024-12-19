@@ -1,8 +1,8 @@
 #ifndef INPUT_SERVICE_H
 #define INPUT_SERVICE_H
 
-#include "Service.h"
 #include "raylib.h"
+#include "Service.h"
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
@@ -57,11 +57,24 @@ public:
         for (auto button : watchedMouseButtons)
         {
             mouseButtonsPressed[button] = false;
+            mouseButtonsDown[button] = false;
             if (IsMouseButtonPressed(button))
             {
                 mouseButtonsPressed[button] = true;
             }
+            if (IsMouseButtonDown(button))
+            {
+                mouseButtonsDown[button] = true;
+            }
         }
+    }
+
+    void checkMousePos() {
+      this->mousePosition = GetMousePosition();
+    }
+
+    Vector2 getMousePos() {
+        return this->mousePosition;
     }
 
     bool isKeyPressed(KeyboardKey key)
@@ -78,22 +91,30 @@ public:
         return mouseButtonsPressed[button];
     }
 
+    bool isMouseButtonDown(MouseButton button) {
+        return mouseButtonsDown[button];
+    }
+
 private:
+    Vector2 mousePosition {0,0};
     std::unordered_set<KeyboardKey> watchedKeys;
     std::unordered_map<KeyboardKey, bool> keysPressed;
     std::unordered_map<KeyboardKey, bool> keysDown;
     std::unordered_set<MouseButton> watchedMouseButtons;
     std::unordered_map<MouseButton, bool> mouseButtonsPressed;
+    std::unordered_map<MouseButton, bool> mouseButtonsDown;
 
     void setMouseButtonsToWatch(std::vector<MouseButton> mouseButtonsToWatch)
     {
         this->watchedMouseButtons.clear();
         this->mouseButtonsPressed.clear();
+        this->mouseButtonsDown.clear();
 
         for (int i = 0; i < mouseButtonsToWatch.size(); i++)
         {
             this->watchedMouseButtons.insert(mouseButtonsToWatch[i]);
             this->mouseButtonsPressed[mouseButtonsToWatch[i]] = false;
+            this->mouseButtonsDown[mouseButtonsToWatch[i]] = false;
         }
     }
 };

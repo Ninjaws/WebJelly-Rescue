@@ -13,6 +13,7 @@ void AudioService::setMusic(EMusic music)
     if (currentTrack == music)
         return;
 
+    stopMusic(); // Makes sure it doesn't continue where it left off
     this->currentTrack = music;
     this->music = AssetService::getInstance().getMusic(music);
 }

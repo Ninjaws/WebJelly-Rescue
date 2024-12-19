@@ -20,7 +20,8 @@
         "source=./scripts,target=/app/scripts,type=bind",
         "source=./dist,target=/app/dist,type=bind",
         "source=./assets,target=/app/assets,type=bind",
-        "source=./include,target=/app/include,type=bind"
+        "source=./include,target=/app/include,type=bind",
+        "source=./.vscode,target=/app/.vscode,type=bind"
     ],
 
     "customizations": {
@@ -29,7 +30,7 @@
             "extensions": [
                 "esbenp.prettier-vscode",
                 "ms-vscode.cpptools-extension-pack",
-                "jeff-hykin.better-cpp-syntax"
+                "vadimcn.vscode-lldb"
             ]
         }
     },
