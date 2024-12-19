@@ -1,0 +1,14 @@
+name: Jelly Rescue Deployment
+run-name: ${{ gitea.actor }} is deploying Jelly Rescue
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  JellyRescue Runner:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - run: docker compose up -d --build

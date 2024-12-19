@@ -1,0 +1,13 @@
+name: Jelly Rescue Testing
+run-name: ${{ gitea.actor }} is testing Jelly Rescue
+on: [push]
+
+jobs:
+  JellyRescue Runner:
+    runs-on: ubuntu-latest
+    steps:
+      - run: docker --version
+      - run: docker compose version
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        # Run tests
