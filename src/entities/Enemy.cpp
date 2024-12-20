@@ -152,8 +152,8 @@ void Enemy::detectPlayer()
         bool spotted = false;
         Vector2 playerCenter = {player.getTexture().getPosition().x + player.getTexture().getSize().x / 2.0f, player.getTexture().getPosition().y + player.getTexture().getSize().y / 2.0f};
         Vector2 enemyCenter = {texture.getPosition().x + texture.getSize().x / 2.0f, texture.getPosition().y + texture.getSize().y / 2.0f};
-        if (this->spriteAnimation.y == Left && this->texture.getPosition().x - player.getTexture().getPosition().x <= spottingRange &&
-            this->texture.getPosition().x - player.getTexture().getPosition().x > 55 && this->texture.getPosition().y + this->texture.getSize().y >= player.getTexture().getPosition().y)
+        if (this->spriteAnimation.y == Left && this->texture.getPosition().x - player.getTexture().getPosition().x <= this->spottingRange &&
+            this->texture.getPosition().x - player.getTexture().getPosition().x > 55 && this->texture.getPosition().y + this->texture.getSize().y + 5 >= player.getTexture().getPosition().y)
         {
             spotted = true;
             float gunRotationLeft = atan2(playerCenter.y - enemyCenter.y,
@@ -161,8 +161,8 @@ void Enemy::detectPlayer()
             float target = -gunRotationLeft * 180 / M_PI;
             this->gunLeft.setRotation(std::min(this->gunLeft.getRotation() + aimSpeed, target));
         }
-        else if (spriteAnimation.y == Right && player.getTexture().getPosition().x - this->texture.getPosition().x <= spottingRange &&
-                 player.getTexture().getPosition().x - this->texture.getPosition().x > 55 && this->texture.getPosition().y + this->texture.getSize().y >= player.getTexture().getPosition().y)
+        else if (spriteAnimation.y == Right && player.getTexture().getPosition().x - this->texture.getPosition().x <= this->spottingRange &&
+                 player.getTexture().getPosition().x - this->texture.getPosition().x > 55 && this->texture.getPosition().y + this->texture.getSize().y + 5 >= player.getTexture().getPosition().y)
         {
             spotted = true;
             float gunRotationRight = atan2(playerCenter.y - enemyCenter.y,
@@ -188,8 +188,7 @@ void Enemy::detectPlayer()
     }
 }
 
-void Enemy::shoot()
-{
+void Enemy::shoot() {
     Player &player = PlayerService::getInstance().getPlayer();
     /** Stop shooting if the player is dead (and falling out of the map) */
     if (player.getHealth() > 0 && playerSpotted && GetTime() - this->lastShot >= (1 / this->shotsPerSecond))
