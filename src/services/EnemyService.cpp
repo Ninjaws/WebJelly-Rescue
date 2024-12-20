@@ -14,7 +14,7 @@ void EnemyService::initEnemies()
     this->enemies[1].getObject().setPosition({51.0f * tileSize, 10.0f * tileSize});
     this->enemies[2].getObject().setPosition({56.0f * tileSize, 5.0f * tileSize});
     this->enemies[3].getObject().setPosition({78.0f * tileSize, 10.0f * tileSize});
-    this->enemies[4].getObject().setPosition({82.0f * tileSize, 15.0f * tileSize});
+    this->enemies[4].getObject().setPosition({81.0f * tileSize, 15.0f * tileSize});
     this->enemies[5].getObject().setPosition({88.0f * tileSize, 4.0f * tileSize});
     this->enemies[6].getObject().setPosition({98.0f * tileSize, 11.0f * tileSize});
     this->enemies[7].getObject().setPosition({103.0f * tileSize, 15.0f * tileSize});

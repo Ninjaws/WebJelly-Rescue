@@ -65,7 +65,7 @@ private:
     uint8_t health;
     uint8_t maxHealth = 5;
     Vector2 velocity = {0, 0};
-    float spottingRange = 300; // From how far away enemies can spot the player
+    float spottingRange = 280.0f; // From how far away enemies can spot the player
     float gravity = 0.6f;
     float moveSpeed = 1.5f;
     float animationDelay = 0.2f; // In seconds

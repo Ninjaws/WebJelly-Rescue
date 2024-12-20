@@ -42,6 +42,7 @@
             font-size: larger;
              font-family: 'Press Start 2P', cursive;
              text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+             user-select: none;
         }
 
         .links {
@@ -107,6 +108,10 @@
             return canvas;
         })()
     };
+
+    window.onload = function() {
+            document.getElementById('canvas').focus();
+        };
 </script>
          <script src=game.js async></script>
     </body>
