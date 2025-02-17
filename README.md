@@ -36,4 +36,4 @@ sudo reboot
 docker compose up # Might take a few minutes to build
 ```
 - Visit https://localhost:4600 to play the game locally
-- Or visit play it live [here!](https://jelly.ianvink.nl)
+- Or play it live [here!](https://jelly.ianvink.nl)
